@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/YumaIdentity.Application/YumaIdentity.Application.csproj" />
+    <Project Path="src/Core/YumaIdentity.Domain/YumaIdentity.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/Infrastructure/YumaIdentity.Infrastructure/YumaIdentity.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/YumaIdentity.API/YumaIdentity.API.csproj" />
+  </Folder>
+</Solution>
