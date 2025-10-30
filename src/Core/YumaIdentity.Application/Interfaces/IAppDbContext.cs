@@ -4,7 +4,7 @@
     using YumaIdentity.Domain.Entities;
     using Microsoft.EntityFrameworkCore;
 
-    internal interface IAppDbContext
+    public interface IAppDbContext
     {
         DbSet<Application> Applications { get; set; }
         DbSet<User> Users { get; set; }

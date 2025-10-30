@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: yumaidentity_mssql_db
+    user: root
+    ports:
+      - "1434:1433"
+    environment:
+      SA_PASSWORD: "${MSSQL_SA_PASSWORD}" 
+      ACCEPT_EULA: "Y"
+    volumes:
+      - mssql-data:/var/opt/mssql/data
+    networks:
+      - auth-network
+      
+volumes:
+  mssql-data:
+
+networks:
+  auth-network:
+    driver: bridge

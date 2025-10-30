@@ -1,8 +1,9 @@
 ﻿namespace YumaIdentity.Application.Models
 {
+    using MediatR;
     using System.ComponentModel.DataAnnotations;
 
-    public class RegisterUserRequest
+    public class RegisterUserRequest : IRequest<Guid>
     {
         [Required]
         [EmailAddress]

@@ -7,7 +7,7 @@
         public Guid UserId { get; set; }
         public Guid RoleId { get; set; }
 
-        public virtual required User User { get; set; }
-        public virtual required AppRole Role { get; set; }
+        public virtual User User { get; set; }
+        public virtual AppRole Role { get; set; }
     }
 }
