@@ -31,8 +31,7 @@
         {
             context.Response.ContentType = "application/json";
             var response = context.Response;
-
-            object errorResponse = new { Title = "", exception.Message };
+            object errorResponse;
 
             switch (exception)
             {
@@ -43,7 +42,10 @@
 
                 case NotFoundException ex:
                     response.StatusCode = (int)HttpStatusCode.NotFound;
-                    errorResponse = new { Title = "Not Found", ex.Message };
+
+                    _logger.LogWarning(ex, "Resource not found. Details: {Message}", ex.Message);
+
+                    errorResponse = new { Title = "Not Found", Message = "The requested resource was not found." };
                     break;
 
                 default:
