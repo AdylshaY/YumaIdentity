@@ -3,7 +3,11 @@
     using MediatR;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using YumaIdentity.Application.Features.Admin.Commands.AssignRoleToUser;
     using YumaIdentity.Application.Features.Admin.Commands.CreateApplication;
+    using YumaIdentity.Application.Features.Admin.Commands.DeleteApplication;
+    using YumaIdentity.Application.Features.Admin.Commands.DeleteUser;
+    using YumaIdentity.Application.Features.Admin.Commands.RemoveRoleFromUser;
     using YumaIdentity.Application.Features.Admin.Queries.GetApplications;
     using YumaIdentity.Application.Features.Admin.Queries.GetUserById;
     using YumaIdentity.Application.Features.Admin.Queries.GetUsers;
@@ -38,6 +42,16 @@
             return CreatedAtAction(nameof(GetApplications), new { id = result.Id }, result);
         }
 
+        [HttpDelete("applications/{id:guid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteApplication(Guid id)
+        {
+            var command = new DeleteApplicationCommand(id);
+            await _mediator.Send(command);
+            return NoContent();
+        }
+
         [HttpGet("users")]
         [ProducesResponseType(typeof(List<GetUsersResponse>), 200)]
         public async Task<IActionResult> GetUsers()
@@ -55,6 +69,44 @@
             var query = new GetUserByIdQuery(id);
             var result = await _mediator.Send(query);
             return Ok(result);
+        }
+
+        [HttpPost("users/{userId:guid}/roles")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> AssignRoleToUser(Guid userId, [FromBody] AssignRoleToUserRequestDto request)
+        {
+            var command = new AssignRoleToUserCommand
+            {
+                UserId = userId,
+                RoleId = request.RoleId
+            };
+
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpDelete("users/{userId:guid}/roles/{roleId:guid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> RemoveRoleFromUser(Guid userId, Guid roleId)
+        {
+            var command = new RemoveRoleFromUserCommand(userId, roleId);
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [HttpDelete("users/{id:guid}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            var command = new DeleteUserCommand(id);
+            await _mediator.Send(command);
+            return NoContent();
         }
     }
 }
