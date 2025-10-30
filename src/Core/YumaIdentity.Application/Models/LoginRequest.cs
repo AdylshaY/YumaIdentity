@@ -1,8 +1,9 @@
 ﻿namespace YumaIdentity.Application.Models
 {
+    using MediatR;
     using System.ComponentModel.DataAnnotations;
 
-    public class LoginRequest
+    public class LoginRequest : IRequest<TokenResponse>
     {
         [Required]
         [EmailAddress]

@@ -28,5 +28,19 @@
                 return BadRequest(new { Error = ex.Message });
             }
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
+        {
+            try
+            {
+                var tokenResponse = await _mediator.Send(request);
+                return Ok(tokenResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { Error = ex.Message });
+            }
+        }
     }
 }
