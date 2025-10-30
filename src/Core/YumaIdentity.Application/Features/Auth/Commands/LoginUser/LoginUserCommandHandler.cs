@@ -6,8 +6,8 @@
     using System.Linq;
     using System.Threading.Tasks;
     using YumaIdentity.Application.Common.Exceptions;
+    using YumaIdentity.Application.Features.Auth.Shared;
     using YumaIdentity.Application.Interfaces;
-    using YumaIdentity.Application.Models;
 
     public class LoginUserCommandHandler : IRequestHandler<LoginRequest, TokenResponse>
     {

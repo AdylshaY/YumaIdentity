@@ -2,7 +2,9 @@
 {
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
-    using YumaIdentity.Application.Models;
+    using YumaIdentity.Application.Features.Auth.Commands.LoginUser;
+    using YumaIdentity.Application.Features.Auth.Commands.RefreshToken;
+    using YumaIdentity.Application.Features.Auth.Commands.RegisterUser;
 
     [ApiController]
     [Route("api/[controller]")]

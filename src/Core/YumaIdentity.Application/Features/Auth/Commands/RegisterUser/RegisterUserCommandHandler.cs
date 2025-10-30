@@ -6,7 +6,6 @@
     using System.Threading.Tasks;
     using YumaIdentity.Application.Common.Exceptions;
     using YumaIdentity.Application.Interfaces;
-    using YumaIdentity.Application.Models;
     using YumaIdentity.Domain.Entities;
 
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserRequest, Guid>

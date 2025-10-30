@@ -1,4 +1,4 @@
-﻿namespace YumaIdentity.Application.Models
+﻿namespace YumaIdentity.Application.Features.Auth.Shared
 {
     using System;
 

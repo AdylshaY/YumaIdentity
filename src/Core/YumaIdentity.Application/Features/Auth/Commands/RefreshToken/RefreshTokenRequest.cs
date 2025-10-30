@@ -1,7 +1,8 @@
-﻿namespace YumaIdentity.Application.Models
+﻿namespace YumaIdentity.Application.Features.Auth.Commands.RefreshToken
 {
     using MediatR;
     using System.ComponentModel.DataAnnotations;
+    using YumaIdentity.Application.Features.Auth.Shared;
 
     public class RefreshTokenRequest : IRequest<TokenResponse>
     {
