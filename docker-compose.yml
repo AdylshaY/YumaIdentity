@@ -1,12 +1,36 @@
 version: '3.8'
 
 services:
+  auth-api:
+    container_name: yumaidentity_api
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - auth-network
+    depends_on:
+      mssql: 
+        condition: service_healthy 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=mssql,1433;Database=YumaIdentity;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;
+      - Jwt__Key=${Jwt__Key}
+      - Jwt__Issuer=${Jwt__Issuer}
+      - Jwt__Audience=${Jwt__Audience}
+      - AdminSeed__AdminClientId=${AdminSeed__AdminClientId}
+      - AdminSeed__AdminClientName=${AdminSeed__AdminClientName}
+      - AdminSeed__AdminClientSecret=${AdminSeed__AdminClientSecret}
+      - AdminSeed__SuperAdminEmail=${AdminSeed__SuperAdminEmail}
+      - AdminSeed__SuperAdminPassword=${AdminSeed__SuperAdminPassword}
+      
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: yumaidentity_mssql_db
     user: root
     ports:
-      - "1434:1433"
+      - "1434:1433" 
     environment:
       SA_PASSWORD: "${MSSQL_SA_PASSWORD}" 
       ACCEPT_EULA: "Y"
@@ -14,7 +38,12 @@ services:
       - mssql-data:/var/opt/mssql/data
     networks:
       - auth-network
-      
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '${MSSQL_SA_PASSWORD}' -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 volumes:
   mssql-data:
 
