@@ -19,6 +19,8 @@ services:
       - Jwt__Key=${Jwt__Key}
       - Jwt__Issuer=${Jwt__Issuer}
       - Jwt__Audience=${Jwt__Audience}
+      - Jwt__AccessTokenExpirationMinutes=${Jwt__AccessTokenExpirationMinutes}
+      - Jwt__RefreshTokenExpirationDays=${Jwt__RefreshTokenExpirationDays}
       - AdminSeed__AdminClientId=${AdminSeed__AdminClientId}
       - AdminSeed__AdminClientName=${AdminSeed__AdminClientName}
       - AdminSeed__AdminClientSecret=${AdminSeed__AdminClientSecret}
