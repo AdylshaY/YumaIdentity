@@ -1,6 +1,6 @@
+﻿using YumaIdentity.API.Extensions;
 using YumaIdentity.API.Middleware;
 using YumaIdentity.Application;
-using YumaIdentity.Application.Interfaces;
 using YumaIdentity.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +10,8 @@ builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerWithJwtAuthentication();
 
 //builder.Services.AddCors(options =>
 //{
@@ -39,20 +40,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-    try
-    {
-        var seeder = services.GetRequiredService<IDatabaseSeeder>();
-        await seeder.InitializeAsync();
-    }
-    catch (Exception ex)
-    {
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the database.");
-        throw;
-    }
-}
+await app.SeedDatabaseAsync();
 
 app.Run();
