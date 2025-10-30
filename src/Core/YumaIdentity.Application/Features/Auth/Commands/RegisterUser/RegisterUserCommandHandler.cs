@@ -4,6 +4,7 @@
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Threading.Tasks;
+    using YumaIdentity.Application.Common.Exceptions;
     using YumaIdentity.Application.Interfaces;
     using YumaIdentity.Application.Models;
     using YumaIdentity.Domain.Entities;
@@ -26,17 +27,17 @@
             var application = await _context.Applications
                 .FirstOrDefaultAsync(a => a.ClientId == request.ClientId, cancellationToken);
 
-            if (application == null) throw new Exception($"Application not found: {request.ClientId}");
+            if (application == null) throw new NotFoundException("Application", request.ClientId);
 
             var userExists = await _context.Users
                 .AnyAsync(u => u.Email == request.Email, cancellationToken);
 
-            if (userExists) throw new Exception("Email already in use.");
+            if (userExists) throw new ValidationException("Email already in use.");
 
             var defaultRole = await _context.AppRoles
                 .FirstOrDefaultAsync(r => r.ApplicationId == application.Id && r.RoleName == "User", cancellationToken);
 
-            if (defaultRole == null) throw new Exception("Default 'User' role not configured for this application. Please seed the database.");
+            if (defaultRole == null) throw new ValidationException("Default 'User' role not configured for this application. Please seed the database.");
 
             var hashedPassword = _passwordHasher.HashPassword(request.Password);
 

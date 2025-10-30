@@ -5,6 +5,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using YumaIdentity.Application.Common.Exceptions;
     using YumaIdentity.Application.Interfaces;
     using YumaIdentity.Application.Models;
 
@@ -31,19 +32,19 @@
                 .FirstOrDefaultAsync(a => a.ClientId == request.ClientId, cancellationToken);
 
             if (application == null)
-                throw new Exception("Invalid ClientId.");
+                throw new NotFoundException("Application", request.ClientId);
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
 
             if (user == null)
-                throw new Exception("Invalid email or password.");
+                throw new ValidationException("Invalid email or password.");
 
             if (!_passwordHasher.VerifyPassword(request.Password, user.HashedPassword))
-                throw new Exception("Invalid email or password.");
+                throw new ValidationException("Invalid email or password.");
 
             if (!user.IsEmailVerified)
-                throw new Exception("Please verify your email address before logging in.");
+                throw new ValidationException("Please verify your email address before logging in.");
 
             var userRoles = await _context.UserRoles
                 .Where(ur => ur.UserId == user.Id)

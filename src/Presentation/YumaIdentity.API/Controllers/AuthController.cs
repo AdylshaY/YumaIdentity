@@ -18,29 +18,15 @@
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
-            try
-            {
-                var userId = await _mediator.Send(request);
-                return Ok(new { UserId = userId });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
+            var userId = await _mediator.Send(request);
+            return Ok(new { UserId = userId });
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            try
-            {
-                var tokenResponse = await _mediator.Send(request);
-                return Ok(tokenResponse);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { Error = ex.Message });
-            }
+            var tokenResponse = await _mediator.Send(request);
+            return Ok(tokenResponse);
         }
     }
 }

@@ -1,3 +1,4 @@
+using YumaIdentity.API.Middleware;
 using YumaIdentity.Application;
 using YumaIdentity.Infrastructure;
 
@@ -5,10 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddApplicationServices();
-
-// TODO (Bir sonraki adým): 
-// AuthService.Application katmaný için de bir DI kurulumu yapacaðýz.
-// builder.Services.AddApplicationServices();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -24,6 +21,8 @@ builder.Services.AddSwaggerGen();
 //});
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
