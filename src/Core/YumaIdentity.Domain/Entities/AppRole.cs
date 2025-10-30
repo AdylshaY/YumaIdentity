@@ -6,10 +6,10 @@
     public class AppRole
     {
         public Guid Id { get; set; }
-        public required string RoleName { get; set; }
+        public string RoleName { get; set; }
         public Guid ApplicationId { get; set; }
 
-        public virtual required Application Application { get; set; }
+        public virtual Application Application { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; } = [];
     }
 }

@@ -1,5 +1,6 @@
 using YumaIdentity.API.Middleware;
 using YumaIdentity.Application;
+using YumaIdentity.Application.Interfaces;
 using YumaIdentity.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// TODO: If a client-side application is to be added to the dashboard, its address must be entered here.
 //builder.Services.AddCors(options =>
 //{
 //    options.AddPolicy("AllowSpecificOrigin",
@@ -32,11 +32,27 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("AllowSpecificOrigin");
+//app.UseCors("AllowSpecificOrigin");
 
-// app.UseAuthentication();
-// app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var seeder = services.GetRequiredService<IDatabaseSeeder>();
+        await seeder.InitializeAsync();
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+        throw;
+    }
+}
 
 app.Run();
