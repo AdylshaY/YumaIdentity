@@ -7,6 +7,6 @@
     {
         string GenerateAccessToken(User user, Application application, IEnumerable<string> roles);
         int GetAccessTokenExpirationInMinutes();
-        RefreshToken GenerateRefreshToken(User user);
+        RefreshToken GenerateRefreshToken(User user, Application application);
     }
 }

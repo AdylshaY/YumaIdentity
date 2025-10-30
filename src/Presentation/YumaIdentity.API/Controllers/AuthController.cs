@@ -28,5 +28,12 @@
             var tokenResponse = await _mediator.Send(request);
             return Ok(tokenResponse);
         }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+        {
+            var tokenResponse = await _mediator.Send(request);
+            return Ok(tokenResponse);
+        }
     }
 }

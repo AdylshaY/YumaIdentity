@@ -51,7 +51,7 @@
             return tokenHandler.WriteToken(token);
         }
 
-        public RefreshToken GenerateRefreshToken(User user)
+        public RefreshToken GenerateRefreshToken(User user, Application application)
         {
             var randomNumber = new byte[64];
             using var rng = RandomNumberGenerator.Create();
@@ -60,7 +60,8 @@
             return new RefreshToken
             {
                 UserId = user.Id,
-                TokenHash = Convert.ToBase64String(randomNumber), // Rastgele ve benzersiz bir string
+                ApplicationId = application.Id,
+                TokenHash = Convert.ToBase64String(randomNumber),
                 ExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays),
                 CreatedAt = DateTime.UtcNow,
                 IsRevoked = false

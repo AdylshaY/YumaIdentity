@@ -50,6 +50,15 @@
                     .HasForeignKey(e => e.RoleId);
             });
 
+            modelBuilder.Entity<RefreshToken>(entity =>
+            {
+                entity.HasIndex(e => e.TokenHash);
+                entity.HasOne(e => e.Application)
+                    .WithMany()
+                    .HasForeignKey(e => e.ApplicationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             modelBuilder.Entity<TokenType>().HasData(
                 new TokenType { Id = 1, TypeName = "EMAIL_VERIFY", Description = "Kullanıcının e-posta adresini doğrulaması için gönderilen token." },
                 new TokenType { Id = 2, TypeName = "PASSWORD_RESET", Description = "Kullanıcının şifresini sıfırlaması için gönderilen token." }

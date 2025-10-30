@@ -57,7 +57,7 @@
                 .ToListAsync(cancellationToken);
 
             var accessToken = _tokenGenerator.GenerateAccessToken(user, application, userRoles);
-            var refreshToken = _tokenGenerator.GenerateRefreshToken(user);
+            var refreshToken = _tokenGenerator.GenerateRefreshToken(user, application);
 
             var expirationInMinutes = _tokenGenerator.GetAccessTokenExpirationInMinutes();
             var expirationTime = DateTime.UtcNow.AddMinutes(expirationInMinutes);
