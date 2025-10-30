@@ -26,12 +26,17 @@
                 provider.GetRequiredService<AppDbContext>());
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
+            services.AddSingleton<IValidAudienceService, DatabaseAudienceService>();
+
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
             var jwtSettings = new JwtSettings();
             configuration.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+
+            var serviceProvider = services.BuildServiceProvider();
+            var audienceService = serviceProvider.GetRequiredService<IValidAudienceService>();
 
             services.AddAuthentication(options =>
             {
@@ -45,13 +50,16 @@
                 {
                     ValidateIssuer = true,
                     ValidIssuer = jwtSettings.Issuer,
-                    ValidateAudience = true,
-                    ValidAudience = jwtSettings.Audience,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
                     ValidateLifetime = true,
                     NameClaimType = ClaimTypes.NameIdentifier,
-                    RoleClaimType = ClaimTypes.Role
+                    RoleClaimType = ClaimTypes.Role,
+                    ValidateAudience = true,
+                    AudienceValidator = (audiences, securityToken, validationParameters) =>
+                    {
+                        return audienceService.IsAudienceValidAsync(audiences).GetAwaiter().GetResult();
+                    }
                 };
             });
 

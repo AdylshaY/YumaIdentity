@@ -1,6 +1,7 @@
 ﻿namespace YumaIdentity.Application.Features.Admin.Commands.CreateApplication
 {
     using MediatR;
+    using Microsoft.Extensions.Caching.Memory;
     using System;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
@@ -9,13 +10,16 @@
 
     public class CreateApplicationCommandHandler : IRequestHandler<CreateApplicationRequest, CreateApplicationResponse>
     {
+        private const string ValidAudiencesCacheKey = "ValidAudiences";
         private readonly IAppDbContext _context;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IMemoryCache _cache;
 
-        public CreateApplicationCommandHandler(IAppDbContext context, IPasswordHasher passwordHasher)
+        public CreateApplicationCommandHandler(IAppDbContext context, IPasswordHasher passwordHasher, IMemoryCache cache)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _cache = cache;
         }
 
         public async Task<CreateApplicationResponse> Handle(CreateApplicationRequest request, CancellationToken cancellationToken)
@@ -59,6 +63,8 @@
             await _context.AppRoles.AddRangeAsync([adminRole, userRole], cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            _cache.Remove(ValidAudiencesCacheKey);
 
             return new CreateApplicationResponse
             {
