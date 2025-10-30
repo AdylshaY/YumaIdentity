@@ -3,6 +3,7 @@
     using MediatR;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using YumaIdentity.Application.Features.Admin.Commands.CreateApplication;
     using YumaIdentity.Application.Features.Admin.Queries.GetApplications;
 
     [Route("api/[controller]")]
@@ -24,6 +25,15 @@
             var query = new GetApplicationsQuery();
             var result = await _mediator.Send(query);
             return Ok(result);
+        }
+
+        [HttpPost("applications")]
+        [ProducesResponseType(typeof(CreateApplicationResponse), 201)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> CreateApplication([FromBody] CreateApplicationRequest request)
+        {
+            var result = await _mediator.Send(request);
+            return CreatedAtAction(nameof(GetApplications), new { id = result.Id }, result);
         }
     }
 }
