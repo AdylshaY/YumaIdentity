@@ -5,6 +5,8 @@
     using Microsoft.AspNetCore.Mvc;
     using YumaIdentity.Application.Features.Admin.Commands.CreateApplication;
     using YumaIdentity.Application.Features.Admin.Queries.GetApplications;
+    using YumaIdentity.Application.Features.Admin.Queries.GetUserById;
+    using YumaIdentity.Application.Features.Admin.Queries.GetUsers;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -34,6 +36,25 @@
         {
             var result = await _mediator.Send(request);
             return CreatedAtAction(nameof(GetApplications), new { id = result.Id }, result);
+        }
+
+        [HttpGet("users")]
+        [ProducesResponseType(typeof(List<GetUsersResponse>), 200)]
+        public async Task<IActionResult> GetUsers()
+        {
+            var query = new GetUsersQuery();
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+        [HttpGet("users/{id:guid}")]
+        [ProducesResponseType(typeof(GetUserByIdResponse), 200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            var query = new GetUserByIdQuery(id);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
     }
 }
