@@ -1,0 +1,9 @@
+﻿namespace YumaIdentity.Application.Interfaces
+{
+    using System.Threading.Tasks;
+
+    public interface IEmailService
+    {
+        Task SendEmailAsync(string toEmail, string subject, string body);
+    }
+}
