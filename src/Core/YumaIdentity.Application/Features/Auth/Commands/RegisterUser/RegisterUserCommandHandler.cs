@@ -12,19 +12,21 @@
     {
         private readonly IAppDbContext _context;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IClientValidator _clientValidator;
 
         public RegisterUserCommandHandler(
             IAppDbContext context,
-            IPasswordHasher passwordHasher)
+            IPasswordHasher passwordHasher,
+            IClientValidator clientValidator)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _clientValidator = clientValidator;
         }
 
         public async Task<Guid> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
         {
-            var application = await _context.Applications
-                .FirstOrDefaultAsync(a => a.ClientId == request.ClientId, cancellationToken);
+            var application = await _clientValidator.ValidateAndGetApplicationAsync(request.ClientId, request.ClientSecret);
 
             if (application == null) throw new NotFoundException("Application", request.ClientId);
 

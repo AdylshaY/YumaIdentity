@@ -38,6 +38,8 @@
             var serviceProvider = services.BuildServiceProvider();
             var audienceService = serviceProvider.GetRequiredService<IValidAudienceService>();
 
+            services.AddScoped<IClientValidator, ClientValidator>();
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

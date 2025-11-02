@@ -5,9 +5,11 @@
     using YumaIdentity.Application.Features.Auth.Commands.LoginUser;
     using YumaIdentity.Application.Features.Auth.Commands.RefreshToken;
     using YumaIdentity.Application.Features.Auth.Commands.RegisterUser;
+    using YumaIdentity.API.Filters;
 
     [ApiController]
     [Route("api/[controller]")]
+    [InjectClientDataFilter]
     public class AuthController : ControllerBase
     {
         private readonly IMediator _mediator;

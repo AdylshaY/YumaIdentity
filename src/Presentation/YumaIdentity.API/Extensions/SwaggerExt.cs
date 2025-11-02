@@ -18,6 +18,14 @@ namespace YumaIdentity.API.Extensions
                     Description = "Please add your Bearer Token."
                 });
 
+                options.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
+                {
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Basic",
+                    In = ParameterLocation.Header,
+                    Description = "Please enter your client credentials."
+                });
+
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
@@ -27,6 +35,17 @@ namespace YumaIdentity.API.Extensions
                             {
                                 Type = ReferenceType.SecurityScheme,
                                 Id = "Bearer"
+                            }
+                        },
+                        Array.Empty<string>()
+                    },
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Basic"
                             }
                         },
                         Array.Empty<string>()

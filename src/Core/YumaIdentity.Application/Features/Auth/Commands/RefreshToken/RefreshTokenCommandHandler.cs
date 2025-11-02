@@ -13,18 +13,18 @@
     {
         private readonly IAppDbContext _context;
         private readonly ITokenGenerator _tokenGenerator;
+        private readonly IClientValidator _clientValidator;
 
-        public RefreshTokenCommandHandler(IAppDbContext context, ITokenGenerator tokenGenerator)
+        public RefreshTokenCommandHandler(IAppDbContext context, ITokenGenerator tokenGenerator, IClientValidator clientValidator)
         {
             _context = context;
             _tokenGenerator = tokenGenerator;
+            _clientValidator = clientValidator;
         }
 
         public async Task<TokenResponse> Handle(RefreshTokenRequest request, CancellationToken cancellationToken)
         {
-            var application = await _context.Applications
-                .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.ClientId == request.ClientId, cancellationToken);
+            var application = await _clientValidator.ValidateAndGetApplicationAsync(request.ClientId, request.ClientSecret);
 
             if (application == null)
                 throw new NotFoundException("Application", request.ClientId);
