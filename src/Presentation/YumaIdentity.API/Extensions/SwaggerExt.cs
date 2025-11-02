@@ -1,4 +1,5 @@
 ﻿using Microsoft.OpenApi.Models;
+using YumaIdentity.API.Filters;
 
 namespace YumaIdentity.API.Extensions
 {
@@ -10,12 +11,10 @@ namespace YumaIdentity.API.Extensions
             {
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     Scheme = "Bearer",
-                    BearerFormat = "JWT",
                     In = ParameterLocation.Header,
-                    Description = "Please add your Bearer Token."
+                    Description = "Access Token (JWT) for user authentication."
                 });
 
                 options.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
@@ -23,36 +22,11 @@ namespace YumaIdentity.API.Extensions
                     Type = SecuritySchemeType.Http,
                     Scheme = "Basic",
                     In = ParameterLocation.Header,
-                    Description = "Please enter your client credentials."
+                    Description = "Basic Auth for application (client) authentication."
                 });
 
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        },
-                        Array.Empty<string>()
-                    },
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Basic"
-                            }
-                        },
-                        Array.Empty<string>()
-                    }
-                });
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
             });
-
             return services;
         }
     }
