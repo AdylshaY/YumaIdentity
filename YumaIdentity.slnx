@@ -17,6 +17,7 @@
     <Project Path="src/Infrastructure/YumaIdentity.Infrastructure/YumaIdentity.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/YumaIdentity.AdminDashboard/YumaIdentity.AdminDashboard.csproj" Id="33f07e21-a042-4efb-b115-867a7faad836" />
     <Project Path="src/Presentation/YumaIdentity.API/YumaIdentity.API.csproj" />
   </Folder>
 </Solution>
