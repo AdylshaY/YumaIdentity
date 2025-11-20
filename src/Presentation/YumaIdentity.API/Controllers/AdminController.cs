@@ -9,6 +9,7 @@
     using YumaIdentity.Application.Features.Admin.Commands.DeleteUser;
     using YumaIdentity.Application.Features.Admin.Commands.RemoveRoleFromUser;
     using YumaIdentity.Application.Features.Admin.Queries.GetApplications;
+    using YumaIdentity.Application.Features.Admin.Queries.GetRolesByApplicationId;
     using YumaIdentity.Application.Features.Admin.Queries.GetUserById;
     using YumaIdentity.Application.Features.Admin.Queries.GetUsers;
 
@@ -107,6 +108,15 @@
             var command = new DeleteUserCommand(id);
             await _mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("applications/{applicationId:guid}/roles")]
+        [ProducesResponseType(typeof(List<GetAppRolesResponse>), 200)]
+        public async Task<IActionResult> GetRolesByApplication(Guid applicationId)
+        {
+            var query = new GetRolesByApplicationIdQuery(applicationId);
+            var result = await _mediator.Send(query);
+            return Ok(result);
         }
     }
 }
