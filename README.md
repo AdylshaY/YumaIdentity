@@ -154,7 +154,7 @@ Choose one of the following deployment methods:
 
 **Option 2: Local Development**
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- [Microsoft SQL Server 2022](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) or SQL Server Express
+- [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (2019 or later) or SQL Server Express
 - (Optional) [Visual Studio 2022](https://visualstudio.microsoft.com/) or [JetBrains Rider](https://www.jetbrains.com/rider/)
 
 ### Installation
@@ -627,7 +627,7 @@ Contributions are what make the open-source community such an amazing place to l
 
 1. **Fork the Project**
    ```bash
-   git clone https://github.com/YourUsername/YumaIdentity.git
+   git clone https://github.com/AdylshaY/YumaIdentity.git
    ```
 
 2. **Create a Feature Branch**
