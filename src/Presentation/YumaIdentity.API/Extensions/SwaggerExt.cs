@@ -17,14 +17,6 @@ namespace YumaIdentity.API.Extensions
                     Description = "Access Token (JWT) for user authentication."
                 });
 
-                options.AddSecurityDefinition("Basic", new OpenApiSecurityScheme
-                {
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "Basic",
-                    In = ParameterLocation.Header,
-                    Description = "Basic Auth for application (client) authentication."
-                });
-
                 options.OperationFilter<SecurityRequirementsOperationFilter>();
             });
             return services;
