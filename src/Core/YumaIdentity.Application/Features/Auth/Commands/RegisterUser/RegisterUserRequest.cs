@@ -2,10 +2,8 @@
 {
     using MediatR;
     using System.ComponentModel.DataAnnotations;
-    using System.Text.Json.Serialization;
-    using YumaIdentity.Application.Interfaces;
 
-    public class RegisterUserRequest : IRequest<Guid>, IClientAuthenticatedRequest
+    public class RegisterUserRequest : IRequest<Guid>
     {
         [Required]
         [EmailAddress]
@@ -15,10 +13,8 @@
         [MinLength(8)]
         public required string Password { get; set; }
 
-        [JsonIgnore]
         public string? ClientId { get; set; }
 
-        [JsonIgnore]
         public string? ClientSecret { get; set; }
     }
 }

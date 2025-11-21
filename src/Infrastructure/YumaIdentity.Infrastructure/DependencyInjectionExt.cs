@@ -26,8 +26,6 @@
                 provider.GetRequiredService<AppDbContext>());
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
 
-            services.AddSingleton<IValidAudienceService, DatabaseAudienceService>();
-
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
@@ -36,7 +34,6 @@
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 
             var serviceProvider = services.BuildServiceProvider();
-            var audienceService = serviceProvider.GetRequiredService<IValidAudienceService>();
 
             services.AddScoped<IClientValidator, ClientValidator>();
 
@@ -57,11 +54,7 @@
                     ValidateLifetime = true,
                     NameClaimType = ClaimTypes.NameIdentifier,
                     RoleClaimType = ClaimTypes.Role,
-                    ValidateAudience = true,
-                    AudienceValidator = (audiences, securityToken, validationParameters) =>
-                    {
-                        return audienceService.IsAudienceValidAsync(audiences).GetAwaiter().GetResult();
-                    }
+                    ValidAudience = configuration["AdminSeed:AdminClientId"],
                 };
             });
 

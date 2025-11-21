@@ -2,11 +2,9 @@
 {
     using MediatR;
     using System.ComponentModel.DataAnnotations;
-    using System.Text.Json.Serialization;
     using YumaIdentity.Application.Features.Auth.Shared;
-    using YumaIdentity.Application.Interfaces;
 
-    public class LoginRequest : IRequest<TokenResponse>, IClientAuthenticatedRequest
+    public class LoginRequest : IRequest<TokenResponse>
     {
         [Required]
         [EmailAddress]
@@ -15,10 +13,8 @@
         [Required]
         public required string Password { get; set; }
 
-        [JsonIgnore]
         public string? ClientId { get; set; }
 
-        [JsonIgnore]
         public string? ClientSecret { get; set; }
     }
 }

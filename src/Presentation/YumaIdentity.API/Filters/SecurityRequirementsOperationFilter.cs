@@ -27,25 +27,6 @@ namespace YumaIdentity.API.Filters
                     }
                 ];
             }
-
-            var hasClientFilter = context.MethodInfo.DeclaringType!.GetCustomAttribute<InjectClientDataFilter>() != null ||
-                                  context.MethodInfo.GetCustomAttribute<InjectClientDataFilter>() != null;
-
-            if (hasClientFilter)
-            {
-                operation.Security =
-                [
-                    new() {
-                        {
-                            new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Basic" }
-                            },
-                            Array.Empty<string>()
-                        }
-                    }
-                ];
-            }
         }
     }
 }

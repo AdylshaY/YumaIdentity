@@ -26,7 +26,6 @@ builder.Services.AddSwaggerWithJwtAuthentication();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseMiddleware<ClientAuthMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
