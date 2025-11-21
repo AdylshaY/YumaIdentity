@@ -33,8 +33,6 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: yumaidentity_mssql_db
     user: root
-    ports:
-      - "1434:1433" 
     environment:
       SA_PASSWORD: "${MSSQL_SA_PASSWORD}" 
       ACCEPT_EULA: "Y"

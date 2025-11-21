@@ -10,6 +10,7 @@
         public required string ClientId { get; set; }
         public required string HashedClientSecret { get; set; }
         public string? AllowedCallbackUrls { get; set; }
+        public bool IsIsolated { get; set; } = false;
 
         public virtual ICollection<AppRole> AppRoles { get; set; } = [];
     }

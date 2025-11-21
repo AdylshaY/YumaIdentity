@@ -29,7 +29,7 @@
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasIndex(e => e.Email).IsUnique();
+                entity.HasIndex(e => new { e.Email, e.TenantId }).IsUnique();
             });
 
             modelBuilder.Entity<AppRole>(entity =>

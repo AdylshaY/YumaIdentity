@@ -8,6 +8,7 @@
         public required string AppName { get; set; }
         public required string ClientId { get; set; }
         public required string ClientSecret { get; set; }
+        public bool IsIsolated { get; set; }
         public string? AllowedCallbackUrls { get; set; }
     }
 }

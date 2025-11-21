@@ -41,7 +41,8 @@
                 AppName = request.AppName,
                 ClientId = clientId,
                 HashedClientSecret = hashedClientSecret,
-                AllowedCallbackUrls = request.AllowedCallbackUrls
+                AllowedCallbackUrls = request.AllowedCallbackUrls,
+                IsIsolated = request.IsIsolated
             };
 
             await _context.Applications.AddAsync(newApplication, cancellationToken);

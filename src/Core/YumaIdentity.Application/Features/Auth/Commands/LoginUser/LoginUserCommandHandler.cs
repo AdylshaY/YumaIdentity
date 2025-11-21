@@ -8,6 +8,7 @@
     using YumaIdentity.Application.Common.Exceptions;
     using YumaIdentity.Application.Features.Auth.Shared;
     using YumaIdentity.Application.Interfaces;
+    using YumaIdentity.Domain.Entities;
 
     public class LoginUserCommandHandler : IRequestHandler<LoginRequest, TokenResponse>
     {
@@ -35,17 +36,39 @@
             if (application == null)
                 throw new NotFoundException("Application", request.ClientId);
 
+            Guid? targetTenantId = application.IsIsolated ? application.Id : null;
+
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+                         .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                         .FirstOrDefaultAsync(u => u.Email == request.Email && u.TenantId == targetTenantId, cancellationToken);
 
-            if (user == null)
-                throw new ValidationException("Invalid email or password.");
-
-            if (!_passwordHasher.VerifyPassword(request.Password, user.HashedPassword))
+            if (user == null || !_passwordHasher.VerifyPassword(request.Password, user.HashedPassword))
                 throw new ValidationException("Invalid email or password.");
 
             if (!user.IsEmailVerified)
                 throw new ValidationException("Please verify your email address before logging in.");
+
+            if (!application.IsIsolated)
+            {
+                var hasRoleInApp = user.UserRoles.Any(ur => ur.Role.ApplicationId == application.Id);
+                if (!hasRoleInApp)
+                {
+                    var defaultRole = await _context.AppRoles
+                        .FirstOrDefaultAsync(r => r.ApplicationId == application.Id && r.RoleName == "User", cancellationToken);
+
+                    if (defaultRole != null)
+                    {
+                        var newRole = new UserRole { UserId = user.Id, RoleId = defaultRole.Id };
+                        _context.UserRoles.Add(newRole);
+                        await _context.SaveChangesAsync(cancellationToken);
+
+                        newRole.Role = defaultRole;
+                        user.UserRoles.Add(newRole);
+                    }
+
+                    throw new ValidationException("No access rights and no default role found.");
+                }
+            }
 
             var userRoles = await _context.UserRoles
                 .Where(ur => ur.UserId == user.Id)

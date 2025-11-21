@@ -30,13 +30,27 @@
 
             if (application == null) throw new NotFoundException("Application", request.ClientId);
 
-            var userExists = await _context.Users
-                .AnyAsync(u => u.Email == request.Email, cancellationToken);
+            Guid? targetTenantId = application.IsIsolated ? application.Id : null;
 
-            if (userExists) throw new ValidationException("Email already in use.");
+            var userExists = await _context.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefaultAsync(u => u.Email == request.Email && u.TenantId == targetTenantId, cancellationToken);
+
+            if (userExists != null)
+            {
+                if (!application.IsIsolated)
+                {
+                    bool hasRole = userExists.UserRoles.Any(ur => ur.Role.ApplicationId == application.Id);
+                    if (hasRole) throw new ValidationException("User already registered for this application.");
+                    throw new ValidationException("You have a Global Account. Please login to connect.");
+                }
+
+                throw new ValidationException("Email already in use in this application.");
+            }
 
             var defaultRole = await _context.AppRoles
-                .FirstOrDefaultAsync(r => r.ApplicationId == application.Id && r.RoleName == "User", cancellationToken);
+                    .FirstOrDefaultAsync(r => r.ApplicationId == application.Id && r.RoleName == "User", cancellationToken);
 
             if (defaultRole == null) throw new ValidationException("Default 'User' role not configured for this application. Please seed the database.");
 
@@ -48,7 +62,8 @@
                 Email = request.Email,
                 HashedPassword = hashedPassword,
                 IsEmailVerified = false,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                TenantId = targetTenantId
             };
 
             var userRole = new UserRole
