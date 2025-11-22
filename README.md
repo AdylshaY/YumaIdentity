@@ -1,134 +1,147 @@
-﻿# YumaIdentity
+# YumaIdentity
 
 <div align="center">
-    <img src="https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET">
+    <img src="https://img.shields.io/badge/.NET%209.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 9">
     <img src="https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white" alt="C#">
     <img src="https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white" alt="MS SQL Server">
     <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
-    <img src="https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT">
-    <img src="https://img.shields.io/badge/Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" alt="Swagger">
+    <img src="https://img.shields.io/badge/License-AGPL%20v3-blue?style=for-the-badge&logo=gnu" alt="License">
 </div>
 <br>
 
+**YumaIdentity** is a centralized Identity and Access Management (IAM) service built for modern applications. Powered by **.NET 9** and designed with **Clean Architecture**, it supports hybrid multi-tenancy, secure JWT authentication, and robust role-based authorization.
 
-A centralized Identity and Access Management (IAM) service for your applications. Powered by .NET, structured with Clean Architecture, backed by MS SQL Server, and designed for easy Docker-based deployment.
+## 🚀 Key Features
 
-## ✨ Key Features
-
-- **Centralized Authentication & Authorization:** Manage users, roles, and application access from a single, secure point.
-- **Client Credentials Flow:** Supports machine-to-machine (M2M) authentication using `ClientId` and `ClientSecret`.
-- **JWT-Based Security:** Utilizes JSON Web Tokens (JWT) for secure API access, with support for refresh tokens.
-- **Dynamic Audience Validation:** Enhances security by validating the token audience dynamically.
-- **Secure Swagger UI:** Role-based access control for Swagger endpoints to protect your API documentation.
-- **Clean Architecture:** A highly modular and maintainable codebase that separates concerns.
-- **Dockerized:** Comes with a `Dockerfile` and `docker-compose.yml` for easy containerization and deployment.
-- **Global Error Handling:** Custom middleware for consistent and secure error responses.
-- **Caching Support:** Improves performance by caching frequently accessed data.
+-   **🔐 Centralized Authentication:** Single entry point for identity management across multiple client applications.
+-   **🏢 Hybrid Multi-Tenancy:** Configure client applications as **Global** (shared user pool) or **Isolated** (app-specific user pool) depending on your business needs.
+-   **🛡️ High Security:**
+    -   Client Secrets and User Passwords are securely hashed using **BCrypt**.
+    -   Robust Access Token & Refresh Token rotation mechanism.
+    -   Dynamic Audience validation.
+-   **🏗️ Clean Architecture:** Built using the CQRS pattern with **MediatR**, ensuring a decoupled and maintainable codebase.
+-   **🐳 Docker Ready:** Fully containerized with `docker-compose` for instant deployment including SQL Server.
+-   **⚙️ Automatic Seeding:** Automatically initializes the SuperAdmin account and Admin Dashboard client upon first launch.
 
 ## 🛠️ Tech Stack
 
-- **Backend:** .NET / C#
-- **Database:** Microsoft SQL Server
-- **Containerization:** Docker
-- **Authentication:** JWT (JSON Web Tokens)
-- **API Documentation:** Swagger / OpenAPI
+-   **Framework:** .NET 9.0.
+-   **Data Access:** Entity Framework Core 9.0 (Code-First).
+-   **Database:** Microsoft SQL Server 2022.
+-   **Pattern:** CQRS (MediatR), Repository Pattern.
+-   **Auth:** JWT Bearer Authentication.
+-   **Documentation:** Swagger / OpenAPI.
 
 ## 🏛️ Architecture
 
-This project is built using the principles of **Clean Architecture**. This design pattern ensures a clear separation of concerns, making the application:
-- Independent of frameworks.
-- Testable.
-- Independent of UI.
-- Independent of the database.
+The project follows the **Onion Architecture** (Clean Architecture) principles to ensure separation of concerns:
 
-The main layers of the application are:
-- **Domain:** Contains enterprise-wide logic, entities, and enums.
-- **Application:** Contains application-specific logic, features, and interfaces.
-- **Infrastructure:** Handles external concerns like database access, caching, and external APIs.
-- **Presentation:** The entry point to the application (Web API), including controllers and middleware.
+1.  **Core (Domain & Application):** Contains enterprise logic, entities, enums, and use cases. No external dependencies.
+2.  **Infrastructure:** Implements interfaces for database access, JWT generation, password hashing, and external services.
+3.  **Presentation (API):** The entry point (REST API), handling HTTP requests, middleware, and controllers.
 
 ## 🚀 Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
+Follow these instructions to get a copy of the project up and running on your local machine.
 
 ### Prerequisites
 
-- [.NET SDK](https://dotnet.microsoft.com/download)
-- [Docker](https://www.docker.com/products/docker-desktop)
-- [Microsoft SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+-   [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0).
+-   [Docker Desktop](https://www.docker.com/products/docker-desktop) (Optional, for containerized run).
 
-### Installation
+### Option 1: Running with Docker (Recommended)
 
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/AdylshaY/YumaIdentity.git
+This will start both the API and the SQL Server database.
+
+1.  Clone the repository:
+    ```bash
+    git clone [https://github.com/AdylshaY/YumaIdentity.git](https://github.com/AdylshaY/YumaIdentity.git)
     cd YumaIdentity
     ```
 
-2.  **Configure Database:**
-    -   Update the connection string in `appsettings.json` with your MS SQL Server details.
-    -   Run database migrations to set up the schema.
-    ```sh
-    dotnet ef database update
+2.  Configure the environment:
+    -   Rename `.env.example` to `.env`.
+    -   Update the variables (especially `MSSQL_SA_PASSWORD` and `Jwt__Key`) with your own secure values.
+
+3.  Start the services:
+    ```bash
+    docker-compose up --build
     ```
 
-### Initial Admin User Setup
+### Option 2: Running Locally
 
-The application is designed to create a default admin user upon its first launch. The source of the admin credentials depends on the environment you are running the application in.
+1.  Update `appsettings.Development.json` with your local SQL Server connection string.
+2.  Apply database migrations:
+    ```bash
+    dotnet ef database update --project src/Infrastructure/YumaIdentity.Infrastructure --startup-project src/Presentation/YumaIdentity.API
+    ```
+3.  Run the application:
+    ```bash
+    dotnet run --project src/Presentation/YumaIdentity.API
+    ```
 
-#### Running with Visual Studio / .NET CLI
+## 🔌 API Documentation
 
-When you run the project directly from an IDE like Visual Studio or via the `dotnet run` command, the initial admin user's credentials are read from the `appsettings.json` file. Make sure you have a section like this:
+This project uses **Swagger/OpenAPI** for live API documentation.
 
-```json
-"AdminSeed": {
-  "AdminClientId": "admin-dashboard-client",
-  "AdminClientName": "YumaIdentity Admin Dashboard",
-  "AdminClientSecret": "SUPER_SECRET_ADMIN_CLIENT_PASSWORD_123!",
-  "SuperAdminEmail": "superadmin@yuma.com",
-  "SuperAdminPassword": "Admin1234!"
-}
-```
+Once the application is running, navigate to:
+**`http://localhost:8080/swagger`** (or the port configured in your launch settings).
 
-#### Running with Docker Compose
+Here you can:
+-   Explore all available endpoints.
+-   Test API calls directly.
+-   See the required request/response schemas.
+-   Authorize using your JWT token.
 
-When you run the project using `docker-compose`, the credentials for the initial admin user are sourced from a `.env` file located in the root directory of the project. Create a `.env` file with the following content:
+> **Note:** Swagger is the single source of truth for the most up-to-date API contracts.
 
-```env
-AdminSeed__AdminClientId=admin-dashboard-client
-AdminSeed__AdminClientName=YumaIdentity Admin Dashboard
-AdminSeed__AdminClientSecret=YumaIdentityAdminClientSecret
-AdminSeed__SuperAdminEmail=superadmin@example.com
-AdminSeed__SuperAdminPassword=SuperAdminPassword
-```
-The `docker-compose.yml` file is configured to pass these environment variables to the service.
+## 🔮 Roadmap & Future Plans
 
-> **⚠️ Security Warning:**
-> It is strongly recommended to change the default admin password immediately after your first login, especially before deploying to a production environment.
+We are actively developing YumaIdentity. Below are the key milestones and planned features:
 
-### Running the Application
+### [v1.0.1 - Monorepo Restructuring](https://github.com/AdylshaY/YumaIdentity/milestone/3)
+Focuses on preparing the repository structure for future frontend integrations.
+-   [ ] **Monorepo Layout:** Moving the current .NET backend into a `backend/` directory.
+-   [ ] **Frontend Prep:** Establishing an empty `frontend/` directory structure.
 
-**Using .NET CLI:**
-```sh
-dotnet run
-```
+### [v1.1.0 - Email Integration & Account Security](https://github.com/AdylshaY/YumaIdentity/milestone/1)
+Focuses on completing the authentication cycle with email-based workflows.
+-   [ ] **Email Service:** Implementing `IEmailService` using **MailKit**.
+-   [ ] **Verification:** Implementing User Email Verification flow.
+-   [ ] **Recovery:** Implementing **Forgot Password** & **Reset Password** flows.
 
-**Using Docker:**
-```sh
-docker-compose up --build
-```
+### [v1.2.0 - Observability with PLG Stack](https://github.com/AdylshaY/YumaIdentity/milestone/2)
+Focuses on enterprise-grade logging and monitoring using the **Loki & Grafana** stack.
+-   [ ] **Infrastructure:** Setting up Loki & Grafana in Docker.
+-   [ ] **Structured Logging:** Integrating **Serilog** to push logs directly to Loki.
+-   [ ] **Auditing:** Implementing Request & Security Audit logging.
+
+## 🔐 Default Admin Credentials
+
+When the application starts for the first time, it seeds the database with a **SuperAdmin** user and a default **Admin Client**.
+
+You can configure these initial credentials via the `.env` file (for Docker) or `appsettings.json` (for local dev).
+
+**Default (Docker) Credentials**:
+-   **Email:** `superadmin@example.com`
+-   **Password:** `SuperAdminPassword`
+-   **Admin Client ID:** `admin-dashboard-client`
+-   **Admin Client Secret:** `YumaIdentityAdminClientSecret`
+
+> ⚠️ **Security Warning:** Please change these credentials immediately after deployment or in your production configuration.
+
+## 📄 License
+
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+See the [LICENSE](LICENSE) file for details. Generally, this means if you modify the source code and make it available over a network (like a web service), you must also make your modified source code available to users.
 
 ## 🤝 Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+Contributions are welcome! Please fork the repository and create a pull request for any features, bug fixes, or enhancements.
 
 1.  Fork the Project
 2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
 3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4.  Push to the Branch (`git push origin feature/AmazingFeature`)
 5.  Open a Pull Request
-
----
