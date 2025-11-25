@@ -33,7 +33,7 @@ cd backend
 
 *Note: In future versions, docker-compose orchestration will be added to the root directory to launch the entire system (Backend + Frontend + DB) with a single command.*
 
-## 🔮 Roadmap & Gelecek Planları
+## 🔮 Roadmap & Future Plans
 
 YumaIdentity aktif olarak geliştirilmektedir. Aşağıda projenin ana kilometre taşları ve hedefleri yer almaktadır:
 
