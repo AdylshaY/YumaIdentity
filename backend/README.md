@@ -101,10 +101,20 @@ When the application starts for the first time, it seeds the database with a **S
 
 You can configure these initial credentials via the `.env` file (for Docker) or `appsettings.json` (for local dev).
 
-**Default (Docker) Credentials**:
--   **Email:** `superadmin@example.com`
--   **Password:** `SuperAdminPassword`
--   **Admin Client ID:** `admin-dashboard-client`
--   **Admin Client Secret:** `YumaIdentityAdminClientSecret`
+**Default Credentials**
+
+- **Docker (`.env.example`):**
+    - **Email:** `superadmin@example.com`
+    - **Password:** `SuperAdminPassword`
+    - **Admin Client ID:** `admin-dashboard-client`
+    - **Admin Client Secret:** `YumaIdentityAdminClientSecret`
+
+- **Local Development (`appsettings.Development.json`):**
+    - **Email:** `superadmin@yuma.com`
+    - **Password:** `SuperAdminPassword`
+    - **Admin Client ID:** `admin-dashboard-client`
+    - **Admin Client Secret:** `YumaIdentityAdminClientSecret`
 
 > ⚠️ **Security Warning:** Please change these credentials immediately after deployment or in your production configuration.
+
+> **Note:** The default SuperAdmin email differs between Docker and local development environments. You can configure these credentials in your `.env` or `appsettings.json` files as needed.
