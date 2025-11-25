@@ -21,7 +21,7 @@ namespace YumaIdentity.Infrastructure.Services
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            var email = new MimeMessage();
+            using var email = new MimeMessage();
             email.From.Add(new MailboxAddress(_smtpSettings.SenderName, _smtpSettings.SenderEmail));
             email.To.Add(MailboxAddress.Parse(toEmail));
             email.Subject = subject;
@@ -35,9 +35,6 @@ namespace YumaIdentity.Infrastructure.Services
             using var smtp = new SmtpClient();
             try
             {
-                // Development ortamında (Mailpit) genellikle şifreleme yoktur (None).
-                // Production'da (Gmail/SendGrid) StartTls kullanılır.
-                // Auto seçeneği sunucunun yeteneğine göre en güvenli yolu seçer.
                 await smtp.ConnectAsync(_smtpSettings.Host, _smtpSettings.Port, SecureSocketOptions.Auto);
 
                 if (!string.IsNullOrEmpty(_smtpSettings.Username))
@@ -51,7 +48,6 @@ namespace YumaIdentity.Infrastructure.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to send email to {ToEmail}", toEmail);
-                // Hata fırlatıp fırlatmamak iş kuralına bağlıdır, şimdilik loglayıp fırlatalım.
                 throw;
             }
             finally

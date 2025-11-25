@@ -90,7 +90,10 @@
                 rng.GetBytes(randomBytes);
             }
 
-            var emailToken = Convert.ToBase64String(randomBytes);
+            var emailToken = Convert.ToBase64String(randomBytes)
+                .TrimEnd('=')
+                .Replace('+', '-')
+                .Replace('/', '_');
 
             var tokenHash = _passwordHasher.HashPassword(emailToken);
 
@@ -109,34 +112,25 @@
 
             try
             {
-                string verificationBaseUrl;
+                var verificationBaseUrl = !string.IsNullOrEmpty(application.ClientBaseUrl)
+                    ? application.ClientBaseUrl
+                    : _configuration["AdminSeed:AdminDashboardUrl"]!;
 
-                if (!string.IsNullOrEmpty(application.ClientBaseUrl))
-                {
-                    verificationBaseUrl = application.ClientBaseUrl;
-                }
-                else
-                {
-                    verificationBaseUrl = _configuration["AdminSeed:AdminDashboardUrl"]!;
-                }
-
-                var verifyLink = $"{verificationBaseUrl}/auth/verify-email?token={emailToken}&email={request.Email}";
+                var verifyLink = $"{verificationBaseUrl}/auth/verify-email?token={Uri.EscapeDataString(emailToken)}&email={Uri.EscapeDataString(request.Email)}";
 
                 var emailBody = $@"
-                    <h1>Hoş Geldiniz!</h1>
-                    <p>{application.AppName} hesabınızı oluşturduğunuz için teşekkürler.</p>
-                    <p>Hesabınızı doğrulamak için lütfen aşağıdaki butona tıklayın:</p>
-                    <a href='{verifyLink}' style='padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;'>Hesabımı Doğrula</a>
-                    <p>Veya bu kodu kullanın: <b>{emailToken}</b></p>
-
-                    <p>Bu bağlantı 1 saat içinde geçersiz olacaktır.</p>
-                    <p>Teşekkürler,<br/>{application.AppName} Ekibi</p>
-
-                    <p>Not: Bu e-posta otomatik olarak oluşturulmuştur, lütfen yanıtlamayın.</p>
-                    <p>Bu altyapı YumaIdentity tarafından desteklenmektedir.</p>
+                    <h1>Welcome!</h1>
+                    <p>Thank you for creating your {application.AppName} account.</p>
+                    <p>To verify your account, please click the button below:</p>
+                    <a href='{verifyLink}' style='padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;'>Verify My Account</a>
+                    <p>Or use this code: <b>{emailToken}</b></p>
+                    <p>This link will expire in 1 hour.</p>
+                    <p>Thank you,<br/>{application.AppName} Team</p>
+                    <p>Note: This email was generated automatically, please do not reply.</p>
+                    <p>This infrastructure is powered by YumaIdentity.</p>
                 ";
 
-                await _emailService.SendEmailAsync(user.Email, $"{application.AppName} - Hesabınızı Doğrulayın", emailBody);
+                await _emailService.SendEmailAsync(user.Email, $"{application.AppName} - Verify Your Account", emailBody);
             }
             catch (Exception)
             {
