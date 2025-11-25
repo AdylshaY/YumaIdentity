@@ -39,6 +39,7 @@
                 ClientId = clientId,
                 HashedClientSecret = hashedClientSecret,
                 AllowedCallbackUrls = request.AllowedCallbackUrls,
+                ClientBaseUrl = request.ClientBaseUrl,
                 IsIsolated = request.IsIsolated
             };
 

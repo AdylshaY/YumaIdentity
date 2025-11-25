@@ -28,6 +28,11 @@ services:
       - AdminSeed__AdminClientSecret=${AdminSeed__AdminClientSecret}
       - AdminSeed__SuperAdminEmail=${AdminSeed__SuperAdminEmail}
       - AdminSeed__SuperAdminPassword=${AdminSeed__SuperAdminPassword}
+      - AdminSeed__AdminDashboardUrl=${AdminSeed__AdminDashboardUrl:-http://localhost:3000}
+      - SmtpSettings__Host=${SMTP_HOST:-mailpit}
+      - SmtpSettings__Port=${SMTP_PORT:-1025}
+      - SmtpSettings__Username=${SMTP_USER}
+      - SmtpSettings__Password=${SMTP_PASS}
       
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -45,6 +50,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: yumaidentity_mailpit
+    restart: unless-stopped
+    profiles: ["dev"]
+    ports:
+      - "8025:8025" 
+      - "1025:1025"
+    networks:
+      - auth-network
 
 volumes:
   mssql-data:
