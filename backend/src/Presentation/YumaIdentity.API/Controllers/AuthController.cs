@@ -2,9 +2,11 @@
 {
     using MediatR;
     using Microsoft.AspNetCore.Mvc;
+    using YumaIdentity.Application.Features.Auth.Commands.ForgotPassword;
     using YumaIdentity.Application.Features.Auth.Commands.LoginUser;
     using YumaIdentity.Application.Features.Auth.Commands.RefreshToken;
     using YumaIdentity.Application.Features.Auth.Commands.RegisterUser;
+    using YumaIdentity.Application.Features.Auth.Commands.ResetPassword;
     using YumaIdentity.Application.Features.Auth.Commands.VerifyEmail;
 
     [ApiController]
@@ -44,6 +46,20 @@
         {
             await _mediator.Send(request);
             return Ok(new { Message = "Email successfully verified." });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok(new { Message = "Password reset link has been sent to your email." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok(new { Message = "Password has been reset successfully. You can now login with your new password." });
         }
     }
 }
