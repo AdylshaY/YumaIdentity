@@ -33,6 +33,9 @@
             configuration.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
 
+            services.Configure<SmtpSettings>(configuration.GetSection(SmtpSettings.SectionName));
+            services.AddTransient<IEmailService, SmtpEmailService>();
+
             var serviceProvider = services.BuildServiceProvider();
 
             services.AddScoped<IClientValidator, ClientValidator>();

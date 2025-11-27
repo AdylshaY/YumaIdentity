@@ -12,7 +12,7 @@
         public Guid UserId { get; set; }
         public int TokenTypeId { get; set; }
 
-        public virtual required User User { get; set; }
-        public virtual required TokenType TokenType { get; set; }
+        public virtual User User { get; set; }
+        public virtual TokenType TokenType { get; set; }
     }
 }
