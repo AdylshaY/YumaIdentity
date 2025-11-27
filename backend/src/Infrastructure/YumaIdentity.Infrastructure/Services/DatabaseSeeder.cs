@@ -35,14 +35,18 @@
 
             if (!await _context.Applications.AnyAsync(a => a.ClientId == adminClientId))
             {
+                var adminClientBaseUrl = _configuration["AdminSeed:AdminDashboardUrl"];
+
                 var adminApp = new Application
                 {
                     Id = Guid.NewGuid(),
                     AppName = _configuration["AdminSeed:AdminClientName"]!,
                     ClientId = adminClientId!,
                     HashedClientSecret = _passwordHasher.HashPassword(_configuration["AdminSeed:AdminClientSecret"]!),
-                    AllowedCallbackUrls = "[\"http://localhost:3001\"]" // Admin dashboard'un çalışacağı adres
+                    AllowedCallbackUrls = $"[\"{adminClientBaseUrl}\"]",
+                    ClientBaseUrl = adminClientBaseUrl,
                 };
+
                 await _context.Applications.AddAsync(adminApp);
 
                 var superAdminRole = new AppRole

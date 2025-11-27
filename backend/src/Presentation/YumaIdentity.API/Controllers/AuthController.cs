@@ -5,6 +5,7 @@
     using YumaIdentity.Application.Features.Auth.Commands.LoginUser;
     using YumaIdentity.Application.Features.Auth.Commands.RefreshToken;
     using YumaIdentity.Application.Features.Auth.Commands.RegisterUser;
+    using YumaIdentity.Application.Features.Auth.Commands.VerifyEmail;
 
     [ApiController]
     [Route("api/[controller]")]
@@ -36,6 +37,13 @@
         {
             var tokenResponse = await _mediator.Send(request);
             return Ok(tokenResponse);
+        }
+
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok(new { Message = "Email successfully verified." });
         }
     }
 }

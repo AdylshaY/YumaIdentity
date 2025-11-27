@@ -9,6 +9,7 @@
         [MinLength(3, ErrorMessage = "AppName must be at least 3 characters long.")]
         public required string AppName { get; set; }
         public string? AllowedCallbackUrls { get; set; }
+        public string? ClientBaseUrl { get; set; }
         public bool IsIsolated { get; set; } = false;
     }
 }

@@ -2,26 +2,35 @@
 {
     using MediatR;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using System;
+    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using YumaIdentity.Application.Common.Exceptions;
     using YumaIdentity.Application.Interfaces;
     using YumaIdentity.Domain.Entities;
+    using YumaIdentity.Domain.Enums;
 
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserRequest, Guid>
     {
         private readonly IAppDbContext _context;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IClientValidator _clientValidator;
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
 
         public RegisterUserCommandHandler(
             IAppDbContext context,
             IPasswordHasher passwordHasher,
-            IClientValidator clientValidator)
+            IClientValidator clientValidator,
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _clientValidator = clientValidator;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
         public async Task<Guid> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
@@ -75,7 +84,57 @@
             _context.Users.Add(user);
             _context.UserRoles.Add(userRole);
 
+            var randomBytes = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
+            var rawToken = Convert.ToBase64String(randomBytes);
+
+            var tokenHash = _passwordHasher.HashPassword(rawToken);
+
+            var userToken = new UserToken
+            {
+                UserId = user.Id,
+                TokenTypeId = (int)DomainTokenType.EmailVerify,
+                TokenHash = tokenHash,
+                ExpiresAt = DateTime.UtcNow.AddHours(1),
+                IsUsed = false
+            };
+            _context.UserTokens.Add(userToken);
             await _context.SaveChangesAsync(cancellationToken);
+
+            var tokenPayload = $"{user.Id}:{rawToken}";
+            var secureToken = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(tokenPayload));
+
+            var baseUrl = _configuration["AdminSeed:AdminDashboardUrl"] ?? "http://localhost:3000";
+            if (!string.IsNullOrEmpty(application.ClientBaseUrl))
+            {
+                baseUrl = application.ClientBaseUrl;
+            }
+
+            var verifyLink = $"{baseUrl.TrimEnd('/')}/auth/verify-email?token={Uri.EscapeDataString(secureToken)}";
+
+            var emailBody = $@"
+                    <h1>Welcome!</h1>
+                    <p>Thank you for creating your {application.AppName} account.</p>
+                    <p>To verify your account, please click the button below:</p>
+                    <a href='{verifyLink}' style='padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;'>Verify My Account</a>
+                    <p>Or use this code: <b>{secureToken}</b></p>
+                    <p>This link will expire in 1 hour.</p>
+                    <p>Thank you,<br/>{application.AppName} Team</p>
+                    <p>Note: This email was generated automatically, please do not reply.</p>
+                    <p>This infrastructure is powered by YumaIdentity.</p>
+                ";
+
+            try
+            {
+                await _emailService.SendEmailAsync(user.Email, "Hesap Doğrulama", emailBody);
+            }
+            catch
+            {
+                // Log the error but do not block user registration
+            }
 
             return user.Id;
         }
