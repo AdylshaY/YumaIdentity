@@ -44,9 +44,9 @@ Focuses on preparing the repository structure for future frontend integrations.
 
 ### [v1.1.0 - Email Integration & Account Security](https://github.com/AdylshaY/YumaIdentity/milestone/1)
 Focuses on completing the authentication cycle with email-based workflows.
--   [ ] **Email Service:** Implementing `IEmailService` using **MailKit**.
--   [ ] **Verification:** Implementing User Email Verification flow.
--   [ ] **Recovery:** Implementing **Forgot Password** & **Reset Password** flows.
+-   [X] **Email Service:** Implementing `IEmailService` using **MailKit**.
+-   [X] **Verification:** Implementing User Email Verification flow.
+-   [X] **Recovery:** Implementing **Forgot Password** & **Reset Password** flows.
 
 ### [v1.2.0 - Observability with PLG Stack](https://github.com/AdylshaY/YumaIdentity/milestone/2)
 Focuses on enterprise-grade logging and monitoring using the **Loki & Grafana** stack.
