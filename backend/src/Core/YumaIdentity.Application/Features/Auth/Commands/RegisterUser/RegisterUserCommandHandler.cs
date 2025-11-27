@@ -89,13 +89,9 @@
             {
                 rng.GetBytes(randomBytes);
             }
+            var rawToken = Convert.ToBase64String(randomBytes);
 
-            var emailToken = Convert.ToBase64String(randomBytes)
-                .TrimEnd('=')
-                .Replace('+', '-')
-                .Replace('/', '_');
-
-            var tokenHash = _passwordHasher.HashPassword(emailToken);
+            var tokenHash = _passwordHasher.HashPassword(rawToken);
 
             var userToken = new UserToken
             {
@@ -105,36 +101,39 @@
                 ExpiresAt = DateTime.UtcNow.AddHours(1),
                 IsUsed = false
             };
-
             _context.UserTokens.Add(userToken);
-
             await _context.SaveChangesAsync(cancellationToken);
 
-            try
+            var tokenPayload = $"{user.Id}:{rawToken}";
+            var secureToken = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(tokenPayload));
+
+            var baseUrl = _configuration["AdminSeed:AdminDashboardUrl"] ?? "http://localhost:3000";
+            if (!string.IsNullOrEmpty(application.ClientBaseUrl))
             {
-                var verificationBaseUrl = !string.IsNullOrEmpty(application.ClientBaseUrl)
-                    ? application.ClientBaseUrl
-                    : _configuration["AdminSeed:AdminDashboardUrl"]!;
+                baseUrl = application.ClientBaseUrl;
+            }
 
-                var verifyLink = $"{verificationBaseUrl}/auth/verify-email?token={Uri.EscapeDataString(emailToken)}&email={Uri.EscapeDataString(request.Email)}";
+            var verifyLink = $"{baseUrl.TrimEnd('/')}/auth/verify-email?token={Uri.EscapeDataString(secureToken)}";
 
-                var emailBody = $@"
+            var emailBody = $@"
                     <h1>Welcome!</h1>
                     <p>Thank you for creating your {application.AppName} account.</p>
                     <p>To verify your account, please click the button below:</p>
                     <a href='{verifyLink}' style='padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;'>Verify My Account</a>
-                    <p>Or use this code: <b>{emailToken}</b></p>
+                    <p>Or use this code: <b>{secureToken}</b></p>
                     <p>This link will expire in 1 hour.</p>
                     <p>Thank you,<br/>{application.AppName} Team</p>
                     <p>Note: This email was generated automatically, please do not reply.</p>
                     <p>This infrastructure is powered by YumaIdentity.</p>
                 ";
 
-                await _emailService.SendEmailAsync(user.Email, $"{application.AppName} - Verify Your Account", emailBody);
-            }
-            catch (Exception)
+            try
             {
-                // TODO: Add logging here.
+                await _emailService.SendEmailAsync(user.Email, "Hesap Doğrulama", emailBody);
+            }
+            catch
+            {
+                // Log the error but do not block user registration
             }
 
             return user.Id;

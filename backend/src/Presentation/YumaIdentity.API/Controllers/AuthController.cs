@@ -40,10 +40,9 @@
         }
 
         [HttpPost("verify-email")]
-        public async Task<IActionResult> VerifyEmail([FromQuery] string email, [FromQuery] string token)
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequest request)
         {
-            var command = new VerifyEmailRequest { Email = email, Token = token };
-            await _mediator.Send(command);
+            await _mediator.Send(request);
             return Ok(new { Message = "Email successfully verified." });
         }
     }
