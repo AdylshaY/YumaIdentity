@@ -95,6 +95,43 @@ Here you can:
 
 > **Note:** Swagger is the single source of truth for the most up-to-date API contracts.
 
+## 👁️ Observability & Logging (Grafana + Loki)
+
+This project uses the **PLG Stack** (Promtail, Loki, Grafana) to provide centralized, structured logging.
+
+### Accessing Logs
+
+1.  Navigate to **Grafana**: [http://localhost:3000](http://localhost:3000)
+2.  **Login Credentials:**
+    * **User:** `admin`
+    * **Password:** `yuma` *(Defined in docker-compose.yml)*
+3.  Go to the **Explore** tab (Compass icon on the left sidebar).
+4.  Select **Loki** from the data source dropdown menu at the top left.
+
+### Useful Queries
+
+You can filter logs using **LogQL**. Here are some examples to get you started:
+
+* **View all API logs:**
+    ```logql
+    {app="yuma-identity"}
+    ```
+
+* **Filter by Environment (Production/Development):**
+    ```logql
+    {app="yuma-identity", env="production"}
+    ```
+
+* **Find Errors:**
+    ```logql
+    {app="yuma-identity"} |= "Error"
+    ```
+
+* **Search for a specific User ID:**
+    ```logql
+    {app="yuma-identity"} |= "UserId:YOUR_GUID_HERE"
+    ```
+
 ## 🔐 Default Admin Credentials
 
 When the application starts for the first time, it seeds the database with a **SuperAdmin** user and a default **Admin Client**.

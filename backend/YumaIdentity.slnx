@@ -8,6 +8,12 @@
     <File Path="Dockerfile" />
     <File Path="README.md" />
   </Folder>
+  <Folder Name="/Solution Items/docker/" />
+  <Folder Name="/Solution Items/docker/grafana/" />
+  <Folder Name="/Solution Items/docker/grafana/provisioning/" />
+  <Folder Name="/Solution Items/docker/grafana/provisioning/datasources/">
+    <File Path="datasource.yml" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/Core/">
     <Project Path="src/Core/YumaIdentity.Application/YumaIdentity.Application.csproj" />
