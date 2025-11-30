@@ -57,10 +57,33 @@ services:
     image: axllent/mailpit
     container_name: yumaidentity_mailpit
     restart: unless-stopped
-    profiles: ["dev"]
     ports:
       - "8025:8025" 
       - "1025:1025"
+    networks:
+      - auth-network
+
+  loki:
+    image: grafana/loki:main-688dd20
+    container_name: yumaidentity_loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - auth-network
+
+  grafana:
+    image: grafana/grafana:12.1
+    container_name: yumaidentity_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=yuma
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - loki
     networks:
       - auth-network
 
