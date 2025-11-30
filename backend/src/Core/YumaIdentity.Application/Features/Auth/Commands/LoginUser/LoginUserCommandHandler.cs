@@ -2,6 +2,7 @@
 {
     using MediatR;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
@@ -16,17 +17,20 @@
         private readonly IPasswordHasher _passwordHasher;
         private readonly ITokenGenerator _tokenGenerator;
         private readonly IClientValidator _clientValidator;
+        private readonly ILogger<LoginUserCommandHandler> _logger;
 
         public LoginUserCommandHandler(
             IAppDbContext context,
             IPasswordHasher passwordHasher,
             ITokenGenerator tokenGenerator,
-            IClientValidator clientValidator)
+            IClientValidator clientValidator,
+            ILogger<LoginUserCommandHandler> logger)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _tokenGenerator = tokenGenerator;
             _clientValidator = clientValidator;
+            _logger = logger;
         }
 
         public async Task<TokenResponse> Handle(LoginRequest request, CancellationToken cancellationToken)
@@ -43,10 +47,16 @@
                          .FirstOrDefaultAsync(u => u.Email == request.Email && u.TenantId == targetTenantId, cancellationToken);
 
             if (user == null || !_passwordHasher.VerifyPassword(request.Password, user.HashedPassword))
+            {
+                _logger.LogWarning("Failed login attempt for email: {Email} in application: {ApplicationId}", request.Email, application.Id);
                 throw new ValidationException("Invalid email or password.");
+            }
 
             if (!user.IsEmailVerified)
+            {
+                _logger.LogWarning("Login blocked for unverified user {Email}.", request.Email);
                 throw new ValidationException("Please verify your email address before logging in.");
+            }
 
             if (!application.IsIsolated)
             {
@@ -64,9 +74,13 @@
 
                         newRole.Role = defaultRole;
                         user.UserRoles.Add(newRole);
+                        _logger.LogInformation("Auto-provisioned 'User' role for {UserId} on Application {ClientId}.", user.Id, application.ClientId);
                     }
-
-                    throw new ValidationException("No access rights and no default role found.");
+                    else
+                    {
+                        _logger.LogError("Login failed: Default 'User' role not found for Application {ClientId}.", application.ClientId);
+                        throw new ValidationException("No access rights and no default role found.");
+                    }
                 }
             }
 
@@ -88,6 +102,8 @@
 
             _context.RefreshTokens.Add(refreshToken);
             await _context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("User {UserId} successfully logged in to {ClientId}.", user.Id, application.ClientId);
 
             return new TokenResponse
             {

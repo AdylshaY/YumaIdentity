@@ -2,6 +2,7 @@
 {
     using MediatR;
     using Microsoft.Extensions.Caching.Memory;
+    using Microsoft.Extensions.Logging;
     using System;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
@@ -12,11 +13,13 @@
     {
         private readonly IAppDbContext _context;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly ILogger<CreateApplicationCommandHandler> _logger;
 
-        public CreateApplicationCommandHandler(IAppDbContext context, IPasswordHasher passwordHasher)
+        public CreateApplicationCommandHandler(IAppDbContext context, IPasswordHasher passwordHasher, ILogger<CreateApplicationCommandHandler> logger)
         {
             _context = context;
             _passwordHasher = passwordHasher;
+            _logger = logger;
         }
 
         public async Task<CreateApplicationResponse> Handle(CreateApplicationRequest request, CancellationToken cancellationToken)
@@ -62,6 +65,8 @@
             await _context.AppRoles.AddRangeAsync([adminRole, userRole], cancellationToken);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Admin created new Application: {AppName} (ClientId: {ClientId}, Isolated: {IsIsolated})", newApplication.AppName, newApplication.ClientId, newApplication.IsIsolated);
 
             return new CreateApplicationResponse
             {
