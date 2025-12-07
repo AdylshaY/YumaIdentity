@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Admin.Commands.CreateApplication
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using System.ComponentModel.DataAnnotations;
 
     public class CreateApplicationRequest : IRequest<CreateApplicationResponse>

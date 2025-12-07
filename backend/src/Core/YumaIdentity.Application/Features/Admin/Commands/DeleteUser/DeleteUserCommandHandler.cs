@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Admin.Commands.DeleteUser
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using Microsoft.Extensions.Logging;
     using System.Threading.Tasks;
     using YumaIdentity.Application.Common.Exceptions;

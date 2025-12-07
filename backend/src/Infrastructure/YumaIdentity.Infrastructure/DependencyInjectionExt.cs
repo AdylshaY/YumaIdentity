@@ -1,16 +1,17 @@
 ﻿namespace YumaIdentity.Infrastructure
 {
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
+    using System.Security.Claims;
+    using System.Text;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using YumaIdentity.Application.Interfaces;
     using YumaIdentity.Infrastructure.Options;
     using YumaIdentity.Infrastructure.Persistence;
     using YumaIdentity.Infrastructure.Services;
-    using Microsoft.IdentityModel.Tokens;
-    using System.Text;
-    using System.Security.Claims;
 
     public static class DependencyInjectionExt
     {
@@ -62,6 +63,8 @@
             });
 
             services.AddScoped<IDatabaseSeeder, DatabaseSeeder>();
+
+            services.AddTransient<IMediator, Mediator>();
 
             return services;
         }
