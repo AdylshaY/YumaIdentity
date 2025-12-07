@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Serilog;
+﻿using Serilog;
 using YumaIdentity.API.Extensions;
 using YumaIdentity.API.Middleware;
 using YumaIdentity.Application;
