@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Admin.Commands.RemoveRoleFromUser
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using System;
 
     public class RemoveRoleFromUserCommand : IRequest<Unit>

@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Admin.Commands.AssignRoleToUser
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using Microsoft.EntityFrameworkCore;
     using System.Threading.Tasks;
     using YumaIdentity.Application.Common.Exceptions;

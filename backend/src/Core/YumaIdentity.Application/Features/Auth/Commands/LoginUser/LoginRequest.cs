@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Auth.Commands.LoginUser
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using System.ComponentModel.DataAnnotations;
     using YumaIdentity.Application.Features.Auth.Shared;
 

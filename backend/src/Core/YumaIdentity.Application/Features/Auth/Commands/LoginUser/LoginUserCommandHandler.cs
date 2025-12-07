@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Auth.Commands.LoginUser
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
     using System;

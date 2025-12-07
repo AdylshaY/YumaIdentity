@@ -1,4 +1,4 @@
-using MediatR;
+using YumaIdentity.Application.Common.Interfaces.Mediator;
 
 namespace YumaIdentity.Application.Features.Admin.Queries.GetRolesByApplicationId
 {

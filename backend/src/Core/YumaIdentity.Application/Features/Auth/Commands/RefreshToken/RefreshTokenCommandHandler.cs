@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Auth.Commands.RefreshToken
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using Microsoft.EntityFrameworkCore;
     using System;
     using System.Linq;

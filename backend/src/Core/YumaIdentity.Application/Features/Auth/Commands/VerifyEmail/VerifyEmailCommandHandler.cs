@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using YumaIdentity.Application.Common.Interfaces.Mediator;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using YumaIdentity.Application.Common.Exceptions;
