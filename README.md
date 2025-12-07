@@ -50,9 +50,20 @@ Focuses on completing the authentication cycle with email-based workflows.
 
 ### [v1.2.0 - Observability with PLG Stack](https://github.com/AdylshaY/YumaIdentity/milestone/2)
 Focuses on enterprise-grade logging and monitoring using the **Loki & Grafana** stack.
--   [ ] **Infrastructure:** Setting up Loki & Grafana in Docker.
--   [ ] **Structured Logging:** Integrating **Serilog** to push logs directly to Loki.
--   [ ] **Auditing:** Implementing Request & Security Audit logging.
+-   [X] **Infrastructure:** Setting up Loki & Grafana in Docker.
+-   [X] **Structured Logging:** Integrating **Serilog** to push logs directly to Loki.
+-   [X] **Auditing:** Implementing Request & Security Audit logging.
+
+### [v1.3.0 - Architectural Refactoring: Remove MediatR](https://github.com/AdylshaY/YumaIdentity/milestone/4)
+Focuses on ensuring the project remains 100% free and open-source by removing restrictive external dependencies.
+-   [X] **Dependency Removal**: Removed MediatR NuGet package to avoid "Lucky Penny" license warnings.
+-   [X] **Custom Mediator:** Implemented a lightweight, internal Mediator pattern in the Core layer.
+
+### [v2.0.0 - Admin Dashboard UI]()
+Focuses on building the visual interface for SuperAdmins and Tenant Admins.
+-   [X] **Frontend Setup:** Initializing React + Vite project with TypeScript.
+-   [X] **Auth Pages:** Implementing Login, Register, and Forgot Password screens.
+-   [X] **Admin Panel:** Implementing CRUD screens for Users and Applications.
 
 ## 🤝 Contributing
 
