@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using YumaIdentity.Application.Common.Interfaces.Mediator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;

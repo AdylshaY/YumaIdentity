@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Auth.Commands.RegisterUser
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using System.ComponentModel.DataAnnotations;
 
     public class RegisterUserRequest : IRequest<Guid>

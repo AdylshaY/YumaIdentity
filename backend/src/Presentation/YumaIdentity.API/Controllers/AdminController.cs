@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.API.Controllers
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using YumaIdentity.Application.Features.Admin.Commands.AssignRoleToUser;

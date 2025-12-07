@@ -1,4 +1,4 @@
-﻿using MediatR;
+﻿using YumaIdentity.Application.Common.Interfaces.Mediator;
 using System.ComponentModel.DataAnnotations;
 
 namespace YumaIdentity.Application.Features.Auth.Commands.VerifyEmail

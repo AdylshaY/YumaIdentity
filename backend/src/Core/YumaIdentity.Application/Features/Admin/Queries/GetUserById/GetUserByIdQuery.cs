@@ -1,6 +1,6 @@
 ﻿namespace YumaIdentity.Application.Features.Admin.Queries.GetUserById
 {
-    using MediatR;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using System;
 
     public class GetUserByIdQuery : IRequest<GetUserByIdResponse>
