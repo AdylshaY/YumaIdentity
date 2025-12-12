@@ -1,16 +1,19 @@
-﻿using YumaIdentity.Application.Common.Interfaces.Mediator;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using YumaIdentity.Application.Common.Exceptions;
-using YumaIdentity.Application.Interfaces;
-using YumaIdentity.Domain.Enums;
-
-namespace YumaIdentity.Application.Features.Auth.Commands.ResetPassword
+namespace YumaIdentity.Application.Features.OAuth.Commands.ResetPassword
 {
+    using System;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using YumaIdentity.Application.Common.Exceptions;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
+    using YumaIdentity.Application.Interfaces;
+    using YumaIdentity.Domain.Enums;
+
+    /// <summary>
+    /// Handles password reset using a valid reset token.
+    /// </summary>
     public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordRequest, Unit>
     {
         private readonly IAppDbContext _context;

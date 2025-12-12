@@ -1,12 +1,19 @@
-﻿using YumaIdentity.Application.Common.Interfaces.Mediator;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
-using YumaIdentity.Application.Common.Exceptions;
-using YumaIdentity.Application.Interfaces;
-using YumaIdentity.Domain.Enums;
-
-namespace YumaIdentity.Application.Features.Auth.Commands.VerifyEmail
+namespace YumaIdentity.Application.Features.OAuth.Commands.VerifyEmail
 {
+    using System;
+    using System.Linq;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using YumaIdentity.Application.Common.Exceptions;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
+    using YumaIdentity.Application.Interfaces;
+    using YumaIdentity.Domain.Enums;
+
+    /// <summary>
+    /// Handles email verification using a valid verification token.
+    /// </summary>
     public class VerifyEmailCommandHandler : IRequestHandler<VerifyEmailRequest, Unit>
     {
         private readonly IAppDbContext _context;

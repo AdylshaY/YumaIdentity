@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using YumaIdentity.Application.Interfaces;
     using YumaIdentity.Domain.Entities;
+    using YumaIdentity.Domain.Enums;
     using YumaIdentity.Infrastructure.Persistence;
 
     public class DatabaseSeeder : IDatabaseSeeder
@@ -42,8 +43,11 @@
                     Id = Guid.NewGuid(),
                     AppName = _configuration["AdminSeed:AdminClientName"]!,
                     ClientId = adminClientId!,
-                    HashedClientSecret = _passwordHasher.HashPassword(_configuration["AdminSeed:AdminClientSecret"]!),
+                    // Public client - no secret needed, uses PKCE
+                    HashedClientSecret = null,
+                    ClientType = ClientType.Public,
                     AllowedCallbackUrls = $"[\"{adminClientBaseUrl}\"]",
+                    AllowedRedirectUris = $"{adminClientBaseUrl}/dashboard,{adminClientBaseUrl}/auth/callback",
                     ClientBaseUrl = adminClientBaseUrl,
                 };
 
