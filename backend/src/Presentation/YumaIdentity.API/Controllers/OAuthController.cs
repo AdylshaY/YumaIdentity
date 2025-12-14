@@ -9,6 +9,7 @@ namespace YumaIdentity.API.Controllers
     using YumaIdentity.Application.Features.OAuth.Commands.ResetPassword;
     using YumaIdentity.Application.Features.OAuth.Commands.Token;
     using YumaIdentity.Application.Features.OAuth.Commands.VerifyEmail;
+    using YumaIdentity.Application.Features.OAuth.Commands.RevokeToken;
     using YumaIdentity.Application.Features.OAuth.Queries.UserInfo;
     using YumaIdentity.Application.Features.OAuth.Shared;
 
@@ -113,6 +114,18 @@ namespace YumaIdentity.API.Controllers
         {
             await _mediator.Send(request);
             return Ok(new { Message = "Password has been reset successfully." });
+        }
+
+        /// <summary>
+        /// Revoke an access or refresh token.
+        /// Used for logout functionality.
+        /// </summary>
+        [HttpPost("revoke")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Revoke([FromBody] RevokeTokenRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok();
         }
     }
 }
