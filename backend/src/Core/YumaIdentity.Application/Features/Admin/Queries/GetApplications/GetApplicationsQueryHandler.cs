@@ -25,7 +25,7 @@
                     Id = app.Id,
                     AppName = app.AppName,
                     ClientId = app.ClientId,
-                    AllowedCallbackUrls = app.AllowedCallbackUrls
+                    AllowedRedirectUris = app.AllowedRedirectUris
                 })
                 .ToListAsync(cancellationToken);
 

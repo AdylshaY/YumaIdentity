@@ -58,8 +58,6 @@
                     // Public client - no secret needed, uses PKCE
                     HashedClientSecret = null,
                     ClientType = ClientType.Public,
-                    // AllowedCallbackUrls - comma separated for legacy compatibility
-                    AllowedCallbackUrls = adminDashboardUrl,
                     // AllowedRedirectUris - comma separated for OAuth2 PKCE
                     AllowedRedirectUris = $"{adminDashboardUrl}/auth/callback,{adminDashboardUrl}/dashboard",
                     ClientBaseUrl = adminDashboardUrl,

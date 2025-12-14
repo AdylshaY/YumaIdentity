@@ -17,11 +17,6 @@
         public string? HashedClientSecret { get; set; }
 
         /// <summary>
-        /// Comma-separated list of allowed callback URLs for the application.
-        /// </summary>
-        public string? AllowedCallbackUrls { get; set; }
-
-        /// <summary>
         /// Comma-separated list of allowed OAuth2 redirect URIs.
         /// Required for Public clients using the authorization code flow.
         /// </summary>
