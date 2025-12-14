@@ -17,6 +17,7 @@
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<TokenType> TokenTypes { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
+        public DbSet<AuthorizationCode> AuthorizationCodes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,6 +54,21 @@
             modelBuilder.Entity<RefreshToken>(entity =>
             {
                 entity.HasIndex(e => e.TokenHash);
+                entity.HasOne(e => e.Application)
+                    .WithMany()
+                    .HasForeignKey(e => e.ApplicationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<AuthorizationCode>(entity =>
+            {
+                entity.HasIndex(e => e.Code).IsUnique();
+
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
                 entity.HasOne(e => e.Application)
                     .WithMany()
                     .HasForeignKey(e => e.ApplicationId)

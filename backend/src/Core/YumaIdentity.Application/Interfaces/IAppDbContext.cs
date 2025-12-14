@@ -13,6 +13,7 @@
         DbSet<RefreshToken> RefreshTokens { get; set; }
         DbSet<TokenType> TokenTypes { get; set; }
         DbSet<UserToken> UserTokens { get; set; }
+        DbSet<AuthorizationCode> AuthorizationCodes { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

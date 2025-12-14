@@ -1,16 +1,23 @@
-﻿namespace YumaIdentity.Application.Features.Auth.Commands.RegisterUser
+namespace YumaIdentity.Application.Features.OAuth.Commands.RegisterUser
 {
-    using YumaIdentity.Application.Common.Interfaces.Mediator;
+    using System;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
-    using System;
-    using System.Security.Cryptography;
-    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using YumaIdentity.Application.Common.Exceptions;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
     using YumaIdentity.Application.Interfaces;
     using YumaIdentity.Domain.Entities;
     using YumaIdentity.Domain.Enums;
 
+    /// <summary>
+    /// Handles user registration.
+    /// Creates a new user and sends an email verification link.
+    /// </summary>
     public class RegisterUserCommandHandler : IRequestHandler<RegisterUserRequest, Guid>
     {
         private readonly IAppDbContext _context;
@@ -18,26 +25,29 @@
         private readonly IClientValidator _clientValidator;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<RegisterUserCommandHandler> _logger;
 
         public RegisterUserCommandHandler(
             IAppDbContext context,
             IPasswordHasher passwordHasher,
             IClientValidator clientValidator,
             IEmailService emailService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<RegisterUserCommandHandler> logger)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _clientValidator = clientValidator;
             _emailService = emailService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<Guid> Handle(RegisterUserRequest request, CancellationToken cancellationToken)
         {
             var application = await _clientValidator.ValidateAndGetApplicationAsync(request.ClientId, request.ClientSecret);
 
-            if (application == null) throw new NotFoundException("Application", request.ClientId);
+            if (application == null) throw new NotFoundException("Application", request.ClientId ?? "unknown");
 
             Guid? targetTenantId = application.IsIsolated ? application.Id : null;
 
@@ -129,11 +139,11 @@
 
             try
             {
-                await _emailService.SendEmailAsync(user.Email, "Hesap Doğrulama", emailBody);
+                await _emailService.SendEmailAsync(user.Email, "Email Verification", emailBody);
             }
-            catch
+            catch (Exception ex)
             {
-                // Log the error but do not block user registration
+                _logger.LogWarning(ex, "Failed to send verification email to {Email}", user.Email);
             }
 
             return user.Id;

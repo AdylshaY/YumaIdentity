@@ -41,7 +41,7 @@
                 AppName = request.AppName,
                 ClientId = clientId,
                 HashedClientSecret = hashedClientSecret,
-                AllowedCallbackUrls = request.AllowedCallbackUrls,
+                AllowedRedirectUris = request.AllowedRedirectUris,
                 ClientBaseUrl = request.ClientBaseUrl,
                 IsIsolated = request.IsIsolated
             };
@@ -74,7 +74,7 @@
                 AppName = newApplication.AppName,
                 ClientId = newApplication.ClientId,
                 ClientSecret = plainTextClientSecret,
-                AllowedCallbackUrls = newApplication.AllowedCallbackUrls
+                AllowedRedirectUris = newApplication.AllowedRedirectUris
             };
         }
     }
