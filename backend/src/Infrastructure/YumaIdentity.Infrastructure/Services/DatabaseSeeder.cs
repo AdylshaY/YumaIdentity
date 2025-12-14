@@ -1,27 +1,36 @@
 ﻿namespace YumaIdentity.Infrastructure.Services
 {
+    using System;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
     using YumaIdentity.Application.Interfaces;
     using YumaIdentity.Domain.Entities;
+    using YumaIdentity.Domain.Enums;
     using YumaIdentity.Infrastructure.Persistence;
 
+    /// <summary>
+    /// Seeds the database with initial data (Admin application, SuperAdmin user).
+    /// </summary>
     public class DatabaseSeeder : IDatabaseSeeder
     {
         private readonly IAppDbContext _context;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<DatabaseSeeder> _logger;
 
-        public DatabaseSeeder(IAppDbContext context, IPasswordHasher passwordHasher, IConfiguration configuration)
+        public DatabaseSeeder(
+            IAppDbContext context,
+            IPasswordHasher passwordHasher,
+            IConfiguration configuration,
+            ILogger<DatabaseSeeder> logger)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task InitializeAsync()
@@ -31,20 +40,27 @@
                 await dbContext.Database.MigrateAsync();
             }
 
-            var adminClientId = _configuration["AdminSeed:AdminClientId"];
+            var adminClientId = _configuration["AdminSeed:AdminClientId"] ?? "admin-dashboard";
+            var adminClientName = _configuration["AdminSeed:AdminClientName"] ?? "YumaIdentity Admin Dashboard";
+            var adminDashboardUrl = _configuration["AdminSeed:AdminDashboardUrl"] ?? "http://localhost:5173";
+            var superAdminEmail = _configuration["AdminSeed:SuperAdminEmail"] ?? "superadmin@yumaidentity.local";
+            var superAdminPassword = _configuration["AdminSeed:SuperAdminPassword"] ?? "SuperAdmin123!";
 
             if (!await _context.Applications.AnyAsync(a => a.ClientId == adminClientId))
             {
-                var adminClientBaseUrl = _configuration["AdminSeed:AdminDashboardUrl"];
+                _logger.LogInformation("Seeding admin application with ClientId: {ClientId}", adminClientId);
 
                 var adminApp = new Application
                 {
                     Id = Guid.NewGuid(),
-                    AppName = _configuration["AdminSeed:AdminClientName"]!,
-                    ClientId = adminClientId!,
-                    HashedClientSecret = _passwordHasher.HashPassword(_configuration["AdminSeed:AdminClientSecret"]!),
-                    AllowedCallbackUrls = $"[\"{adminClientBaseUrl}\"]",
-                    ClientBaseUrl = adminClientBaseUrl,
+                    AppName = adminClientName,
+                    ClientId = adminClientId,
+                    // Public client - no secret needed, uses PKCE
+                    HashedClientSecret = null,
+                    ClientType = ClientType.Public,
+                    // AllowedRedirectUris - comma separated for OAuth2 PKCE
+                    AllowedRedirectUris = $"{adminDashboardUrl}/auth/callback,{adminDashboardUrl}/dashboard",
+                    ClientBaseUrl = adminDashboardUrl,
                 };
 
                 await _context.Applications.AddAsync(adminApp);
@@ -68,8 +84,8 @@
                 var superAdminUser = new User
                 {
                     Id = Guid.NewGuid(),
-                    Email = _configuration["AdminSeed:SuperAdminEmail"]!,
-                    HashedPassword = _passwordHasher.HashPassword(_configuration["AdminSeed:SuperAdminPassword"]!),
+                    Email = superAdminEmail,
+                    HashedPassword = _passwordHasher.HashPassword(superAdminPassword),
                     IsEmailVerified = true,
                     CreatedAt = DateTime.UtcNow
                 };
@@ -82,6 +98,12 @@
                 });
 
                 await _context.SaveChangesAsync(CancellationToken.None);
+
+                _logger.LogInformation("Database seeded successfully. SuperAdmin: {Email}", superAdminEmail);
+            }
+            else
+            {
+                _logger.LogInformation("Database already seeded, skipping.");
             }
         }
     }

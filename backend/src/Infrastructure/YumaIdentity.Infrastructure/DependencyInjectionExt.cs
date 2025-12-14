@@ -29,6 +29,7 @@
             services.AddScoped<IAppDbContext>(provider =>
                 provider.GetRequiredService<AppDbContext>());
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            services.AddSingleton<IPkceService, PkceService>();
 
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             services.AddScoped<ITokenGenerator, JwtTokenGenerator>();

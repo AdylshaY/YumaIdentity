@@ -1,19 +1,23 @@
-﻿using YumaIdentity.Application.Common.Interfaces.Mediator;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using YumaIdentity.Application.Common.Exceptions;
-using YumaIdentity.Application.Interfaces;
-using YumaIdentity.Domain.Entities;
-using YumaIdentity.Domain.Enums;
-
-namespace YumaIdentity.Application.Features.Auth.Commands.ForgotPassword
+namespace YumaIdentity.Application.Features.OAuth.Commands.ForgotPassword
 {
+    using System;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+    using YumaIdentity.Application.Common.Exceptions;
+    using YumaIdentity.Application.Common.Interfaces.Mediator;
+    using YumaIdentity.Application.Interfaces;
+    using YumaIdentity.Domain.Entities;
+    using YumaIdentity.Domain.Enums;
+
+    /// <summary>
+    /// Handles the forgot password request.
+    /// Generates a password reset token and sends it to the user's email.
+    /// </summary>
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordRequest, Unit>
     {
         private readonly IAppDbContext _context;
@@ -21,25 +25,28 @@ namespace YumaIdentity.Application.Features.Auth.Commands.ForgotPassword
         private readonly IPasswordHasher _passwordHasher;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<ForgotPasswordCommandHandler> _logger;
 
         public ForgotPasswordCommandHandler(
             IAppDbContext context,
             IClientValidator clientValidator,
             IPasswordHasher passwordHasher,
             IEmailService emailService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            ILogger<ForgotPasswordCommandHandler> logger)
         {
             _context = context;
             _clientValidator = clientValidator;
             _passwordHasher = passwordHasher;
             _emailService = emailService;
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task<Unit> Handle(ForgotPasswordRequest request, CancellationToken cancellationToken)
         {
             var application = await _clientValidator.ValidateAndGetApplicationAsync(request.ClientId, request.ClientSecret);
-            if (application == null) throw new NotFoundException("Application", request.ClientId);
+            if (application == null) throw new NotFoundException("Application", request.ClientId ?? "unknown");
 
             Guid? targetTenantId = application.IsIsolated ? application.Id : null;
 
@@ -96,9 +103,9 @@ namespace YumaIdentity.Application.Features.Auth.Commands.ForgotPassword
             {
                 await _emailService.SendEmailAsync(user.Email, "Password Reset Request", emailBody);
             }
-            catch
+            catch (Exception ex)
             {
-
+                _logger.LogWarning(ex, "Failed to send password reset email to {Email}", user.Email);
             }
 
             return Unit.Value;

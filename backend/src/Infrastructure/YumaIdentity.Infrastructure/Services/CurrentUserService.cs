@@ -17,5 +17,7 @@ namespace YumaIdentity.Infrastructure.Services
                                  ?? _httpContextAccessor.HttpContext?.User?.FindFirstValue("sub");
 
         public string? ClientId => _httpContextAccessor.HttpContext?.User?.FindFirstValue("aud");
+
+        public ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
     }
 }
