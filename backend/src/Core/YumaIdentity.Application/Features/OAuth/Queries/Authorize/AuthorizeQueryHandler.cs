@@ -1,4 +1,4 @@
-namespace YumaIdentity.Application.Features.OAuth.Commands.Authorize
+namespace YumaIdentity.Application.Features.OAuth.Queries.Authorize
 {
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -13,33 +13,32 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.Authorize
     using YumaIdentity.Domain.Enums;
 
     /// <summary>
-    /// Handles the OAuth2 authorization request.
-    /// Validates credentials and returns an authorization code for PKCE flow.
+    /// Handles OAuth2 authorization request.
+    /// Checks authentication status and generates authorization code if authenticated.
     /// </summary>
-    public class AuthorizeCommandHandler : IRequestHandler<AuthorizeRequest, AuthorizeResponse>
+    public class AuthorizeQueryHandler : IRequestHandler<AuthorizeQuery, AuthorizeQueryResponse>
     {
         private readonly IAppDbContext _context;
-        private readonly IPasswordHasher _passwordHasher;
+        private readonly IOAuthSessionService _sessionService;
         private readonly IPkceService _pkceService;
-        private readonly ILogger<AuthorizeCommandHandler> _logger;
+        private readonly ILogger<AuthorizeQueryHandler> _logger;
 
         private const int AuthorizationCodeExpirationSeconds = 60;
 
-        public AuthorizeCommandHandler(
+        public AuthorizeQueryHandler(
             IAppDbContext context,
-            IPasswordHasher passwordHasher,
+            IOAuthSessionService sessionService,
             IPkceService pkceService,
-            ILogger<AuthorizeCommandHandler> logger)
+            ILogger<AuthorizeQueryHandler> logger)
         {
             _context = context;
-            _passwordHasher = passwordHasher;
+            _sessionService = sessionService;
             _pkceService = pkceService;
             _logger = logger;
         }
 
-        public async Task<AuthorizeResponse> Handle(AuthorizeRequest request, CancellationToken cancellationToken)
+        public async Task<AuthorizeQueryResponse> Handle(AuthorizeQuery request, CancellationToken cancellationToken)
         {
-            // 1. Validate the client application
             var application = await _context.Applications
                 .FirstOrDefaultAsync(a => a.ClientId == request.ClientId, cancellationToken);
 
@@ -49,7 +48,6 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.Authorize
                 throw new NotFoundException("Application", request.ClientId);
             }
 
-            // 2. For Public clients, PKCE is required and secret is not used
             if (application.ClientType == ClientType.Public)
             {
                 if (string.IsNullOrEmpty(request.CodeChallenge))
@@ -63,7 +61,6 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.Authorize
                 }
             }
 
-            // 3. Validate redirect_uri
             if (!IsValidRedirectUri(application, request.RedirectUri))
             {
                 _logger.LogWarning("Authorization failed: Invalid redirect_uri {RedirectUri} for client {ClientId}",
@@ -71,28 +68,34 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.Authorize
                 throw new ValidationException("Invalid redirect_uri.");
             }
 
-            // 4. Find the user based on tenant isolation
-            Guid? targetTenantId = application.IsIsolated ? application.Id : null;
+            if (string.IsNullOrEmpty(request.SessionId))
+            {
+                return new AuthorizeQueryResponse
+                {
+                    RequiresAuthentication = true,
+                    RequiresConsent = false
+                };
+            }
+
+            var userId = _sessionService.GetUserIdFromSession(request.SessionId);
+            if (!userId.HasValue)
+            {
+                return new AuthorizeQueryResponse
+                {
+                    RequiresAuthentication = true,
+                    RequiresConsent = false
+                };
+            }
 
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == request.Email && u.TenantId == targetTenantId, cancellationToken);
+                .FirstOrDefaultAsync(u => u.Id == userId.Value, cancellationToken);
 
-            // 5. Validate credentials
-            if (user == null || !_passwordHasher.VerifyPassword(request.Password, user.HashedPassword))
+            if (user == null)
             {
-                _logger.LogWarning("Authorization failed: Invalid credentials for {Email} on client {ClientId}",
-                    request.Email, request.ClientId);
-                throw new ValidationException("Invalid email or password.");
+                _logger.LogWarning("Authorization failed: User not found for session");
+                throw new ValidationException("Invalid session.");
             }
 
-            // 6. Check email verification
-            if (!user.IsEmailVerified)
-            {
-                _logger.LogWarning("Authorization blocked: Email not verified for {Email}", request.Email);
-                throw new ValidationException("Please verify your email address before logging in.");
-            }
-
-            // 7. Generate authorization code
             var code = _pkceService.GenerateAuthorizationCode();
 
             var authorizationCode = new AuthorizationCode
@@ -116,16 +119,16 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.Authorize
             _logger.LogInformation("Authorization code generated for user {UserId} on client {ClientId}",
                 user.Id, application.ClientId);
 
-            return new AuthorizeResponse
+            return new AuthorizeQueryResponse
             {
+                RequiresAuthentication = false,
+                RequiresConsent = false,
                 AuthorizationCode = code,
+                State = request.State,
                 ExpiresIn = AuthorizationCodeExpirationSeconds
             };
         }
 
-        /// <summary>
-        /// Validates that the redirect_uri is in the application's allowed list.
-        /// </summary>
         private static bool IsValidRedirectUri(Application application, string redirectUri)
         {
             if (string.IsNullOrEmpty(application.AllowedRedirectUris))
