@@ -3,6 +3,7 @@ using YumaIdentity.API.Extensions;
 using YumaIdentity.API.Middleware;
 using YumaIdentity.Application;
 using YumaIdentity.Infrastructure;
+using YumaIdentity.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddMemoryCache();
+builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
@@ -28,15 +30,22 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerWithJwtAuthentication();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin",
-        policy => policy.WithOrigins("http://localhost:3000")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
-});
+builder.Services.AddCors();
 
 var app = builder.Build();
+
+app.UseCors(policy =>
+{
+    policy.SetIsOriginAllowed(origin =>
+    {
+        using var scope = app.Services.CreateScope();
+        var corsService = scope.ServiceProvider.GetRequiredService<DynamicCorsService>();
+        return corsService.IsOriginAllowedAsync(origin).GetAwaiter().GetResult();
+    })
+    .AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials();
+});
 
 app.UseSerilogRequestLogging(options =>
 {
@@ -54,8 +63,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseSession();
-
-app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
 app.UseAuthorization();

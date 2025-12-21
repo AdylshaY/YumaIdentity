@@ -22,6 +22,13 @@
         /// </summary>
         public string? AllowedRedirectUris { get; set; }
 
+        /// <summary>
+        /// Comma-separated list of allowed CORS origins for this client.
+        /// Used to control which origins can make API requests to IAM endpoints.
+        /// Example: "https://app.example.com,http://localhost:3000"
+        /// </summary>
+        public string? AllowedOrigins { get; set; }
+
         public string? ClientBaseUrl { get; set; }
 
         /// <summary>

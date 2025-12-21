@@ -32,6 +32,9 @@
             services.AddSingleton<IPkceService, PkceService>();
             services.AddSingleton<IOAuthSessionService, OAuthSessionService>();
 
+            services.Configure<CorsSettings>(configuration.GetSection(CorsSettings.SectionName));
+            services.AddScoped<DynamicCorsService>();
+
             services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
             services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
