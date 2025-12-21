@@ -3,13 +3,15 @@ namespace YumaIdentity.API.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using YumaIdentity.Application.Common.Interfaces.Mediator;
-    using YumaIdentity.Application.Features.OAuth.Commands.Authorize;
     using YumaIdentity.Application.Features.OAuth.Commands.ForgotPassword;
+    using YumaIdentity.Application.Features.OAuth.Commands.Login;
+    using YumaIdentity.Application.Features.OAuth.Commands.Logout;
     using YumaIdentity.Application.Features.OAuth.Commands.RegisterUser;
     using YumaIdentity.Application.Features.OAuth.Commands.ResetPassword;
     using YumaIdentity.Application.Features.OAuth.Commands.Token;
     using YumaIdentity.Application.Features.OAuth.Commands.VerifyEmail;
     using YumaIdentity.Application.Features.OAuth.Commands.RevokeToken;
+    using YumaIdentity.Application.Features.OAuth.Queries.Authorize;
     using YumaIdentity.Application.Features.OAuth.Queries.UserInfo;
     using YumaIdentity.Application.Features.OAuth.Shared;
 
@@ -41,14 +43,27 @@ namespace YumaIdentity.API.Controllers
         }
 
         /// <summary>
-        /// Authorize a user and get an authorization code.
-        /// This is the first step of the OAuth2 PKCE flow.
+        /// OAuth2 authorization endpoint (Standard flow).
+        /// Initiates the authorization code flow with PKCE.
         /// </summary>
-        [HttpPost("authorize")]
-        [ProducesResponseType(typeof(AuthorizeResponse), 200)]
+        [HttpGet("authorize")]
+        [ProducesResponseType(typeof(AuthorizeQueryResponse), 200)]
+        [ProducesResponseType(400)]
+        public async Task<IActionResult> Authorize([FromQuery] AuthorizeQuery query)
+        {
+            var response = await _mediator.Send(query);
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Internal login endpoint for OAuth UI.
+        /// Creates an authentication session.
+        /// </summary>
+        [HttpPost("login")]
+        [ProducesResponseType(typeof(LoginResponse), 200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
-        public async Task<IActionResult> Authorize([FromBody] AuthorizeRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var response = await _mediator.Send(request);
             return Ok(response);
@@ -65,6 +80,17 @@ namespace YumaIdentity.API.Controllers
         {
             var response = await _mediator.Send(request);
             return Ok(response);
+        }
+
+        /// <summary>
+        /// Logout and clear OAuth session.
+        /// </summary>
+        [HttpPost("logout")]
+        [ProducesResponseType(200)]
+        public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok(new { Message = "Logged out successfully." });
         }
 
         /// <summary>
