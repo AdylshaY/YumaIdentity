@@ -60,6 +60,8 @@
                     ClientType = ClientType.Public,
                     // AllowedRedirectUris - comma separated for OAuth2 PKCE
                     AllowedRedirectUris = $"{adminDashboardUrl}/auth/callback,{adminDashboardUrl}/dashboard",
+                    // AllowedOrigins - comma separated for CORS
+                    AllowedOrigins = adminDashboardUrl,
                     ClientBaseUrl = adminDashboardUrl,
                 };
 
