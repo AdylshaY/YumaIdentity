@@ -1,6 +1,3 @@
-export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
+import sharedPostcss from "@repo/tailwind-config/postcss.config.js";
+
+export default sharedPostcss;
