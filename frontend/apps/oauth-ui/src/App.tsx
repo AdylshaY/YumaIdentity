@@ -1,17 +1,37 @@
-import { Button } from "@repo/ui/button.tsx"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
+import {
+  LoginPage,
+  RegisterPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
+  VerifyEmailPage,
+  AuthorizePage,
+  NotFoundPage,
+} from "./pages";
+
+export function App() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-tight">YumaIdentity</h1>
-          <p className="text-muted-foreground">OAuth2 Authorization</p>
-        </div>
-        <Button variant='secondary'>Test</Button>
-      </div>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        {/* Auth pages */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+        
+        {/* OAuth flow */}
+        <Route path="/authorize" element={<AuthorizePage />} />
+        
+        {/* Default redirect to login */}
+        <Route path="/" element={<LoginPage />} />
+        
+        {/* 404 */}
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
