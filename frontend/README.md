@@ -1,135 +1,220 @@
-# Turborepo starter
+# YumaIdentity Frontend
 
-This Turborepo starter is maintained by the Turborepo core team.
+OAuth2 Authorization UI for YumaIdentity - a modern identity and access management system.
 
-## Using this example
+## Overview
 
-Run the following command:
+This is a **Turborepo monorepo** containing the OAuth2 authentication UI and shared packages. The frontend handles the authorization flow for client applications using the **OAuth2 Authorization Code Flow with PKCE**.
 
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
+## Architecture
 
 ```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+frontend/
+├── apps/
+│   └── oauth-ui/              # OAuth2 Authorization UI (Vite + React 19)
+│
+├── packages/
+│   ├── ui/                    # Shared UI components (shadcn/ui)
+│   ├── tailwind-config/       # Shared Tailwind CSS configuration
+│   ├── typescript-config/     # Shared TypeScript configurations
+│   └── eslint-config/         # Shared ESLint configurations
+│
+├── package.json               # Root package with Turborepo scripts
+├── turbo.json                 # Turborepo pipeline configuration
+└── pnpm-workspace.yaml        # pnpm workspace definition
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## Tech Stack
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+- **Build Tool**: Vite 7.3
+- **Framework**: React 19
+- **Language**: TypeScript 5.9
+- **Styling**: Tailwind CSS 3.4 + shadcn/ui
+- **Forms**: React Hook Form + Zod validation
+- **Routing**: React Router 7
+- **HTTP Client**: Axios
+- **Monorepo**: Turborepo + pnpm
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+## Prerequisites
 
-### Develop
+- **Node.js** >= 18
+- **pnpm** >= 9.0 (`npm install -g pnpm`)
 
-To develop all apps and packages, run the following command:
+## Getting Started
 
-```
-cd my-turborepo
+### 1. Install dependencies
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+cd frontend
+pnpm install
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+### 2. Configure environment
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+```bash
+# Copy example env file
+cp apps/oauth-ui/.env.example apps/oauth-ui/.env
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+# Edit .env file
+# VITE_API_URL=http://localhost:5294
 ```
 
-### Remote Caching
+### 3. Run development server
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+```bash
+# Run all apps in dev mode
+pnpm dev
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# Or run specific app
+cd apps/oauth-ui
+pnpm dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+The OAuth UI will be available at **http://localhost:5173**
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### 4. Build for production
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+```bash
+pnpm build
 ```
 
-## Useful Links
+## OAuth2 Flow
 
-Learn more about the power of Turborepo:
+The OAuth UI implements the **Authorization Code Flow with PKCE**:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+```
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Client App   │     │  OAuth UI    │     │   Backend    │
+└──────┬───────┘     └──────┬───────┘     └──────┬───────┘
+       │                    │                    │
+       │ 1. Redirect with   │                    │
+       │ PKCE params        │                    │
+       │───────────────────>│                    │
+       │                    │                    │
+       │                    │ 2. User login      │
+       │                    │───────────────────>│
+       │                    │                    │
+       │                    │ 3. Session created │
+       │                    │<───────────────────│
+       │                    │                    │
+       │                    │ 4. Get auth code   │
+       │                    │───────────────────>│
+       │                    │                    │
+       │ 5. Redirect with   │                    │
+       │ authorization code │                    │
+       │<───────────────────│                    │
+       │                    │                    │
+       │ 6. Exchange code   │                    │
+       │ for tokens         │                    │
+       │───────────────────────────────────────->│
+       │                    │                    │
+       │ 7. Access + Refresh│                    │
+       │    tokens          │                    │
+       │<───────────────────────────────────────-│
+```
+
+## Pages
+
+| Route | Description |
+|-------|-------------|
+| `/login` | User sign in |
+| `/register` | New user registration |
+| `/forgot-password` | Request password reset |
+| `/reset-password` | Set new password (with token) |
+| `/verify-email` | Email verification (with token) |
+| `/authorize` | OAuth callback handler |
+
+## Adding UI Components
+
+shadcn/ui components are installed in the shared `@repo/ui` package:
+
+```bash
+cd packages/ui
+pnpm dlx shadcn@latest add [component-name]
+
+# Example
+pnpm dlx shadcn@latest add dialog dropdown-menu
+```
+
+Components are automatically available to all apps via:
+
+```tsx
+import { Button } from "@repo/ui/button.tsx";
+import { Input } from "@repo/ui/input.tsx";
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start all apps in development mode |
+| `pnpm build` | Build all apps for production |
+| `pnpm lint` | Run ESLint on all packages |
+| `pnpm format` | Format code with Prettier |
+| `pnpm check-types` | Run TypeScript type checking |
+
+## Project Structure Details
+
+### apps/oauth-ui
+
+Main OAuth2 authorization UI application.
+
+```
+oauth-ui/
+├── src/
+│   ├── components/       # React components
+│   │   └── layouts/      # Page layouts
+│   ├── lib/
+│   │   ├── api/          # API client and types
+│   │   ├── pkce.ts       # PKCE utilities
+│   │   ├── oauth.ts      # OAuth flow helpers
+│   │   └── validations.ts # Zod schemas
+│   ├── pages/            # Route pages
+│   ├── App.tsx           # Router configuration
+│   └── main.tsx          # Entry point
+├── .env                  # Environment variables
+└── package.json
+```
+
+### packages/ui
+
+Shared React component library using shadcn/ui.
+
+```
+ui/
+├── src/
+│   ├── button.tsx        # Button component
+│   ├── input.tsx         # Input component
+│   ├── label.tsx         # Label component
+│   ├── card.tsx          # Card component
+│   ├── alert.tsx         # Alert component
+│   ├── form.tsx          # Form components
+│   ├── styles.css        # CSS variables (theming)
+│   └── lib/
+│       └── utils.ts      # cn() utility
+└── components.json       # shadcn configuration
+```
+
+### packages/tailwind-config
+
+Shared Tailwind CSS configuration with shadcn/ui theme.
+
+### packages/typescript-config
+
+Shared TypeScript configurations:
+- `base.json` - Base configuration
+- `vite-react.json` - Vite + React apps
+- `react-library.json` - React libraries
+- `nextjs.json` - Next.js apps
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_URL` | Backend API URL | `http://localhost:5294` |
+
+## Related
+
+- [Backend Documentation](../backend/README.md)
+- [shadcn/ui Documentation](https://ui.shadcn.com)
+- [Turborepo Documentation](https://turbo.build/repo/docs)
