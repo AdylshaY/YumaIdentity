@@ -3,9 +3,9 @@ import {
   Card,
   CardContent,
   CardHeader,
-} from "@repo/ui/card";
-import { Button } from "@repo/ui/button";
-import { Input } from "@repo/ui/input";
+} from "@repo/ui/card.tsx";
+import { Button } from "@repo/ui/button.tsx";
+import { Input } from "@repo/ui/input.tsx";
 import { adminApi, type Application } from "../lib/api";
 import { Plus, Search, MoreHorizontal, Loader2, Copy } from "lucide-react";
 
@@ -31,8 +31,8 @@ export function ApplicationsPage() {
 
   const filteredApplications = applications.filter(
     (app) =>
-      app.clientName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.clientId.toLowerCase().includes(searchQuery.toLowerCase())
+      app.clientName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.clientId?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const copyClientId = (clientId: string) => {

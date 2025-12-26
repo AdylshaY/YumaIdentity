@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@repo/ui/card";
-import { Users, AppWindow, Shield, Activity } from "lucide-react";
-import { adminApi } from "../lib/api";
+} from '@repo/ui/card.tsx';
+import { Users, AppWindow, Shield, Activity } from 'lucide-react';
+import { adminApi } from '../lib/api';
 
 interface Stats {
   totalUsers: number;
@@ -26,8 +26,7 @@ export function DashboardPage() {
         const response = await adminApi.getStats();
         setStats(response.data);
       } catch (error) {
-        console.error("Failed to load stats:", error);
-        // Use placeholder data for now
+        console.error('Failed to load stats:', error);
         setStats({
           totalUsers: 0,
           totalApplications: 0,
@@ -44,54 +43,54 @@ export function DashboardPage() {
 
   const statCards = [
     {
-      title: "Total Users",
+      title: 'Total Users',
       value: stats?.totalUsers ?? 0,
       icon: Users,
-      description: "Registered users",
+      description: 'Registered users',
     },
     {
-      title: "Applications",
+      title: 'Applications',
       value: stats?.totalApplications ?? 0,
       icon: AppWindow,
-      description: "OAuth applications",
+      description: 'OAuth applications',
     },
     {
-      title: "Roles",
+      title: 'Roles',
       value: stats?.totalRoles ?? 0,
       icon: Shield,
-      description: "User roles",
+      description: 'User roles',
     },
     {
-      title: "Active Users",
+      title: 'Active Users',
       value: stats?.activeUsers ?? 0,
       icon: Activity,
-      description: "Last 30 days",
+      description: 'Last 30 days',
     },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className='text-3xl font-bold tracking-tight'>Dashboard</h1>
+        <p className='text-muted-foreground'>
           Overview of your identity management system
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         {statCards.map((stat) => (
           <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">
+            <CardHeader className='flex flex-row items-center justify-between pb-2'>
+              <CardTitle className='text-sm font-medium'>
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <stat.icon className='h-4 w-4 text-muted-foreground' />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {loading ? "-" : stat.value}
+              <div className='text-2xl font-bold'>
+                {loading ? '-' : stat.value}
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className='text-xs text-muted-foreground'>
                 {stat.description}
               </p>
             </CardContent>
@@ -99,14 +98,14 @@ export function DashboardPage() {
         ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className='grid gap-4 md:grid-cols-2'>
         <Card>
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Latest actions in the system</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className='text-sm text-muted-foreground'>
               No recent activity to display
             </p>
           </CardContent>
@@ -117,22 +116,22 @@ export function DashboardPage() {
             <CardTitle>Quick Actions</CardTitle>
             <CardDescription>Common administrative tasks</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className='space-y-2'>
             <a
-              href="/dashboard/users"
-              className="block text-sm text-primary hover:underline"
+              href='/dashboard/users'
+              className='block text-sm text-primary hover:underline'
             >
               → Manage Users
             </a>
             <a
-              href="/dashboard/applications"
-              className="block text-sm text-primary hover:underline"
+              href='/dashboard/applications'
+              className='block text-sm text-primary hover:underline'
             >
               → Manage Applications
             </a>
             <a
-              href="/dashboard/roles"
-              className="block text-sm text-primary hover:underline"
+              href='/dashboard/roles'
+              className='block text-sm text-primary hover:underline'
             >
               → Manage Roles
             </a>

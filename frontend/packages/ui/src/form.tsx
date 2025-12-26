@@ -10,12 +10,15 @@ import {
   type ControllerProps,
   type FieldPath,
   type FieldValues,
+  type UseFormReturn,
 } from "react-hook-form"
 
-import { cn } from "src/lib/utils"
-import { Label } from "src/label"
+import { cn } from "./lib/utils"
+import { Label } from "./label"
 
-const Form = FormProvider
+const Form: <TFieldValues extends FieldValues>(
+  props: UseFormReturn<TFieldValues> & { children: React.ReactNode }
+) => React.ReactNode = FormProvider
 
 type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
