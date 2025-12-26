@@ -99,7 +99,7 @@ export async function exchangeCodeForToken(
   code: string,
   codeVerifier: string
 ): Promise<TokenResponse> {
-  const response = await axios.post<TokenResponse>(`${API_URL}/oauth/token`, {
+  const response = await axios.post<TokenResponse>(`${API_URL}/api/oauth/token`, {
     grant_type: "authorization_code",
     code,
     code_verifier: codeVerifier,

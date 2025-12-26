@@ -49,8 +49,25 @@ namespace YumaIdentity.API.Controllers
         [HttpGet("authorize")]
         [ProducesResponseType(typeof(AuthorizeQueryResponse), 200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Authorize([FromQuery] AuthorizeQuery query)
+        public async Task<IActionResult> Authorize(
+            [FromQuery(Name = "client_id")] string clientId,
+            [FromQuery(Name = "redirect_uri")] string redirectUri,
+            [FromQuery(Name = "code_challenge")] string codeChallenge,
+            [FromQuery(Name = "code_challenge_method")] string codeChallengeMethod,
+            [FromQuery(Name = "state")] string? state = null,
+            [FromQuery(Name = "scope")] string? scope = null,
+            [FromQuery(Name = "session_id")] string? sessionId = null)
         {
+            var query = new AuthorizeQuery
+            {
+                ClientId = clientId,
+                RedirectUri = redirectUri,
+                CodeChallenge = codeChallenge,
+                CodeChallengeMethod = codeChallengeMethod,
+                State = state,
+                Scope = scope,
+                SessionId = sessionId
+            };
             var response = await _mediator.Send(query);
             return Ok(response);
         }

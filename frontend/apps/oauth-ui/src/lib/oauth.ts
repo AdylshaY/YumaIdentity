@@ -71,14 +71,14 @@ export function clearOAuthParams(): void {
 }
 
 /**
- * Build the authorization URL to redirect back to after login
+ * Build the authorization URL to redirect back to OAuth UI's authorize page after login
  */
 export function buildAuthorizeUrl(
-  baseUrl: string,
   params: OAuthParams,
   sessionId: string
 ): string {
-  const url = new URL(`${baseUrl}/api/oauth/authorize`);
+  // Use OAuth UI's own /authorize page, not the backend API
+  const url = new URL(`${window.location.origin}/authorize`);
   url.searchParams.set("client_id", params.clientId);
   url.searchParams.set("redirect_uri", params.redirectUri);
   url.searchParams.set("code_challenge", params.codeChallenge);

@@ -28,8 +28,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 interface JwtPayload {
   sub: string;
   email: string;
-  name: string;
-  roles: string | string[];
+  name?: string;
+  roles?: string | string[];
   exp: number;
 }
 
@@ -42,17 +42,18 @@ function parseToken(token: string): User | null {
       return null;
     }
 
-    // Handle roles as string or array
-    const roles = Array.isArray(decoded.roles)
-      ? decoded.roles
-      : decoded.roles
-        ? [decoded.roles]
-        : [];
+    // Handle roles as string or array or undefined
+    let roles: string[] = [];
+    if (Array.isArray(decoded.roles)) {
+      roles = decoded.roles;
+    } else if (decoded.roles) {
+      roles = [decoded.roles];
+    }
 
     return {
       id: decoded.sub,
       email: decoded.email,
-      name: decoded.name,
+      name: decoded.name || decoded.email, // Fallback to email if name not present
       roles,
     };
   } catch {

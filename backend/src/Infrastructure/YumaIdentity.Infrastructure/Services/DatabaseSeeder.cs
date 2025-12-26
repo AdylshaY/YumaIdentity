@@ -40,9 +40,9 @@
                 await dbContext.Database.MigrateAsync();
             }
 
-            var adminClientId = _configuration["AdminSeed:AdminClientId"] ?? "admin-dashboard";
+            var adminClientId = _configuration["AdminSeed:AdminClientId"] ?? "admin-dashboard-client";
             var adminClientName = _configuration["AdminSeed:AdminClientName"] ?? "YumaIdentity Admin Dashboard";
-            var adminDashboardUrl = _configuration["AdminSeed:AdminDashboardUrl"] ?? "http://localhost:5173";
+            var adminDashboardUrl = _configuration["AdminSeed:AdminDashboardUrl"] ?? "http://localhost:5174";
             var superAdminEmail = _configuration["AdminSeed:SuperAdminEmail"] ?? "superadmin@yumaidentity.local";
             var superAdminPassword = _configuration["AdminSeed:SuperAdminPassword"] ?? "SuperAdmin123!";
 
@@ -55,12 +55,9 @@
                     Id = Guid.NewGuid(),
                     AppName = adminClientName,
                     ClientId = adminClientId,
-                    // Public client - no secret needed, uses PKCE
                     HashedClientSecret = null,
                     ClientType = ClientType.Public,
-                    // AllowedRedirectUris - comma separated for OAuth2 PKCE
-                    AllowedRedirectUris = $"{adminDashboardUrl}/auth/callback,{adminDashboardUrl}/dashboard",
-                    // AllowedOrigins - comma separated for CORS
+                    AllowedRedirectUris = $"{adminDashboardUrl}/callback",
                     AllowedOrigins = adminDashboardUrl,
                     ClientBaseUrl = adminDashboardUrl,
                 };

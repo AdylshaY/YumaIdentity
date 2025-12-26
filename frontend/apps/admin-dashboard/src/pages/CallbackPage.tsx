@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/card";
-import { Alert, AlertDescription } from "@repo/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/card.tsx";
+import { Alert, AlertDescription } from "@repo/ui/alert.tsx";
 import { getPkceParams, clearPkceParams, validateState } from "../lib/pkce";
 import { exchangeCodeForToken } from "../lib/api";
 import { useAuth } from "../contexts/AuthContext";
@@ -12,8 +12,12 @@ export function CallbackPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { login } = useAuth();
+  const processedRef = useRef(false);
 
   useEffect(() => {
+    // Prevent double processing in React StrictMode
+    if (processedRef.current) return;
+    
     const handleCallback = async () => {
       const code = searchParams.get("code");
       const state = searchParams.get("state");
@@ -31,6 +35,9 @@ export function CallbackPage() {
         setError("Missing authorization code or state parameter");
         return;
       }
+
+      // Mark as processed
+      processedRef.current = true;
 
       // Validate state to prevent CSRF
       if (!validateState(state)) {
@@ -56,11 +63,20 @@ export function CallbackPage() {
         // Store tokens and update auth state
         login(tokens.access_token, tokens.refresh_token);
 
-        // Redirect to dashboard
-        navigate("/dashboard", { replace: true });
-      } catch (err) {
+        // Use a small delay to ensure state update is processed
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 100);
+      } catch (err: unknown) {
         console.error("Token exchange failed:", err);
-        setError("Failed to exchange authorization code for tokens");
+        // Extract error message from axios error
+        let errorMessage = "Failed to exchange authorization code for tokens";
+        if (err && typeof err === 'object' && 'response' in err) {
+          const axiosError = err as { response?: { data?: { message?: string; Message?: string; title?: string; Title?: string } } };
+          const data = axiosError.response?.data;
+          errorMessage = data?.message || data?.Message || data?.title || data?.Title || errorMessage;
+        }
+        setError(errorMessage);
         clearPkceParams();
       }
     };

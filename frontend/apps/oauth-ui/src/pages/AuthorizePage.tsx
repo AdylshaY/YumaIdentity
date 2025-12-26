@@ -8,12 +8,17 @@ import {
   getStoredOAuthParams,
   clearOAuthParams,
   buildCallbackUrl,
+  parseOAuthParams,
+  storeOAuthParams,
 } from "../lib/oauth";
 
 /**
- * This page handles the OAuth authorize response.
- * After successful login, the user is redirected to /api/oauth/authorize with session_id.
- * The backend returns an authorization code which we then pass to the client's redirect_uri.
+ * This page handles the OAuth authorization flow.
+ * 1. Client redirects here with OAuth params (client_id, redirect_uri, code_challenge, etc.)
+ * 2. If no session, redirect to login page
+ * 3. After login, user returns here with session_id
+ * 4. Call backend to get authorization code
+ * 5. Redirect to client's redirect_uri with the code
  */
 export function AuthorizePage() {
   const [searchParams] = useSearchParams();
@@ -22,7 +27,16 @@ export function AuthorizePage() {
 
   useEffect(() => {
     const handleAuthorize = async () => {
-      const oauthParams = getStoredOAuthParams();
+      // First, try to get OAuth params from URL (initial request from client)
+      let oauthParams = parseOAuthParams(searchParams);
+      
+      if (oauthParams) {
+        // Store params for use after login redirect
+        storeOAuthParams(oauthParams);
+      } else {
+        // Try to get from storage (returning from login)
+        oauthParams = getStoredOAuthParams();
+      }
 
       if (!oauthParams) {
         setError("Missing OAuth parameters. Please start the authorization flow again.");
@@ -32,7 +46,7 @@ export function AuthorizePage() {
       const sessionId = searchParams.get("session_id");
       
       if (!sessionId) {
-        // No session, redirect to login
+        // No session, redirect to login with OAuth params
         const loginUrl = `/login?client_id=${oauthParams.clientId}&redirect_uri=${encodeURIComponent(oauthParams.redirectUri)}&code_challenge=${oauthParams.codeChallenge}&code_challenge_method=${oauthParams.codeChallengeMethod}${oauthParams.state ? `&state=${oauthParams.state}` : ""}${oauthParams.scope ? `&scope=${oauthParams.scope}` : ""}`;
         window.location.href = loginUrl;
         return;

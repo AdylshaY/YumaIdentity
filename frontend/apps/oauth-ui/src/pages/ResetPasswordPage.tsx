@@ -53,8 +53,7 @@ export function ResetPasswordPage() {
     try {
       await oauthApi.resetPassword({
         token,
-        email,
-        newPassword: data.password,
+        new_password: data.password,
       });
       setSuccess(true);
     } catch (err) {

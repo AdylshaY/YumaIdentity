@@ -30,6 +30,7 @@
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Name, user.Email), // Use email as name for now
                 new Claim(JwtRegisteredClaimNames.Aud, application.ClientId),
                 new Claim(JwtRegisteredClaimNames.Iss, _jwtSettings.Issuer),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -37,7 +38,7 @@
 
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim("roles", role)); // Use simple "roles" claim name
             }
 
             var tokenDescriptor = new SecurityTokenDescriptor

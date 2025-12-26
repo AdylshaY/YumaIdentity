@@ -6,7 +6,7 @@
 export interface LoginRequest {
   email: string;
   password: string;
-  clientId: string;
+  client_id: string;
 }
 
 export interface LoginResponse {
@@ -18,8 +18,8 @@ export interface LoginResponse {
 export interface RegisterRequest {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
+  client_id?: string;
+  client_secret?: string;
 }
 
 export interface RegisterResponse {
@@ -86,8 +86,7 @@ export interface ForgotPasswordResponse {
 // ----- Reset Password -----
 export interface ResetPasswordRequest {
   token: string;
-  email: string;
-  newPassword: string;
+  new_password: string;
 }
 
 export interface ResetPasswordResponse {

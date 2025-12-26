@@ -1,6 +1,7 @@
 namespace YumaIdentity.Application.Features.OAuth.Commands.ResetPassword
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Text.Json.Serialization;
     using YumaIdentity.Application.Common.Interfaces.Mediator;
 
     /// <summary>
@@ -12,6 +13,7 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.ResetPassword
         /// The password reset token (composite format: UserId:RawToken).
         /// </summary>
         [Required]
+        [JsonPropertyName("token")]
         public required string Token { get; set; }
 
         /// <summary>
@@ -19,6 +21,7 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.ResetPassword
         /// </summary>
         [Required]
         [MinLength(8)]
+        [JsonPropertyName("new_password")]
         public required string NewPassword { get; set; }
     }
 }

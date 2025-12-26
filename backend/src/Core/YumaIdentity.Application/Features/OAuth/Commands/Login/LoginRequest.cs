@@ -1,6 +1,7 @@
 namespace YumaIdentity.Application.Features.OAuth.Commands.Login
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Text.Json.Serialization;
     using YumaIdentity.Application.Common.Interfaces.Mediator;
 
     /// <summary>
@@ -11,12 +12,15 @@ namespace YumaIdentity.Application.Features.OAuth.Commands.Login
     {
         [Required]
         [EmailAddress]
+        [JsonPropertyName("email")]
         public required string Email { get; set; }
 
         [Required]
+        [JsonPropertyName("password")]
         public required string Password { get; set; }
 
         [Required]
+        [JsonPropertyName("client_id")]
         public required string ClientId { get; set; }
     }
 }

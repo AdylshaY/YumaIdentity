@@ -3,7 +3,7 @@ import {
   generateCodeChallenge,
   generateState,
   storePkceParams,
-} from "./pkce";
+} from './pkce';
 
 const OAUTH_URL = import.meta.env.VITE_OAUTH_URL;
 const CLIENT_ID = import.meta.env.VITE_OAUTH_CLIENT_ID;
@@ -14,26 +14,22 @@ const REDIRECT_URI = import.meta.env.VITE_OAUTH_REDIRECT_URI;
  * Redirects the user to the OAuth authorization server
  */
 export async function initiateOAuthFlow(): Promise<void> {
-  // Generate PKCE parameters
   const codeVerifier = generateCodeVerifier();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
   const state = generateState();
 
-  // Store PKCE params for later verification
   storePkceParams({ codeVerifier, state });
 
-  // Build authorization URL
   const params = new URLSearchParams({
-    response_type: "code",
+    response_type: 'code',
     client_id: CLIENT_ID,
     redirect_uri: REDIRECT_URI,
-    scope: "openid profile email",
+    scope: 'openid profile email',
     state,
     code_challenge: codeChallenge,
-    code_challenge_method: "S256",
+    code_challenge_method: 'S256',
   });
 
-  // Redirect to OAuth UI (authorize page)
   window.location.href = `${OAUTH_URL}/authorize?${params.toString()}`;
 }
 
@@ -42,7 +38,7 @@ export async function initiateOAuthFlow(): Promise<void> {
  */
 export function isOAuthCallback(): boolean {
   const params = new URLSearchParams(window.location.search);
-  return params.has("code") && params.has("state");
+  return params.has('code') && params.has('state');
 }
 
 /**
@@ -50,8 +46,8 @@ export function isOAuthCallback(): boolean {
  */
 export function getCallbackParams(): { code: string; state: string } | null {
   const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-  const state = params.get("state");
+  const code = params.get('code');
+  const state = params.get('state');
 
   if (code && state) {
     return { code, state };

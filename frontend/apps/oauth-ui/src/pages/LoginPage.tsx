@@ -20,8 +20,6 @@ import {
   type OAuthParams,
 } from "../lib/oauth";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5294";
-
 export function LoginPage() {
   const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -69,13 +67,13 @@ export function LoginPage() {
       const response = await oauthApi.login({
         email: data.email,
         password: data.password,
-        clientId: oauthParams.clientId,
+        client_id: oauthParams.clientId,
       });
 
-      // After successful login, redirect back to authorize with session_id
-      const authorizeUrl = buildAuthorizeUrl(API_BASE_URL, oauthParams, response.sessionId);
+      // After successful login, redirect back to OAuth UI's authorize page with session_id
+      const authorizeUrl = buildAuthorizeUrl(oauthParams, response.sessionId);
       
-      // Redirect to authorize endpoint
+      // Redirect to authorize page which will get the code and redirect to client
       window.location.href = authorizeUrl;
     } catch (err) {
       setError(getErrorMessage(err));
