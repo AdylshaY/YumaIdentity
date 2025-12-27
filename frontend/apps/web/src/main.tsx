@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import './style.css';
 import typescriptLogo from '/typescript.svg';
+import { Button } from '@repo/ui/components/button';
 
 const App = () => (
   <div>
@@ -16,13 +17,10 @@ const App = () => (
     </a>
     <h1>Vite + TypeScript</h1>
     <div className='card'>
-      <button
-        onClick={() => {
-          alert('Hello Vite + TypeScript!');
-        }}
-      >
-        Click me
-      </button>
+      <Button onClick={() => alert('Button clicked!')}>Click me</Button>
+      <p>
+        Edit <code>apps/web/src/main.tsx</code> and save to test HMR
+      </p>
     </div>
   </div>
 );
