@@ -1,32 +1,31 @@
-# `Turborepo` Vite starter
+# shadcn/ui monorepo template
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+This template is for creating a monorepo with shadcn/ui.
 
-## Using this example
+## Usage
 
-Run the following command:
-
-```sh
-npx create-turbo@latest -e with-vite-react
+```bash
+pnpm dlx shadcn@latest init
 ```
 
-## What's inside?
+## Adding components
 
-This Turborepo includes the following packages and apps:
+To add components to your app, run the following command at the root of your `web` app:
 
-### Apps and Packages
+```bash
+pnpm dlx shadcn@latest add button -c apps/web
+```
 
-- `web`: react [vite](https://vitejs.dev) ts app
-- `@repo/ui`: a stub component library shared by `web` application
-- `@repo/eslint-config`: shared `eslint` configurations
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+This will place the ui components in the `packages/ui/src/components` directory.
 
-Each package and app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Tailwind
 
-### Utilities
+Your `tailwind.config.ts` and `globals.css` are already set up to use the components from the `ui` package.
 
-This Turborepo has some additional tools already setup for you:
+## Using components
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+To use the components in your app, import them from the `ui` package.
+
+```tsx
+import { Button } from "@workspace/ui/components/button"
+```

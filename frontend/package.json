@@ -1,16 +1,22 @@
 {
+  "name": "frontend",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "eslint": "^9.39.1",
-    "prettier": "^3.2.5",
-    "turbo": "^2.7.2"
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "prettier": "^3.7.4",
+    "turbo": "^2.6.3",
+    "typescript": "5.7.3"
   },
-  "packageManager": "pnpm@8.15.6",
-  "name": "with-vite-react"
+  "packageManager": "pnpm@10.4.1",
+  "engines": {
+    "node": ">=20"
+  }
 }
