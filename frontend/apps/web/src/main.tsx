@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import './style.css';
 import typescriptLogo from '/typescript.svg';
 import { Button } from '@repo/ui/components/button';
+import { Avatar } from '@repo/ui/components/avatar';
 
 const App = () => (
   <div>
@@ -16,9 +17,12 @@ const App = () => (
       />
     </a>
     <h1>Vite + TypeScript</h1>
+    <div className='flex items-center gap-2'>
+      <Avatar />
+    </div>
     <div className='card'>
       <Button onClick={() => alert('Button clicked!')}>Click me</Button>
-      <p>
+      <p className='text-sm text-muted-foreground'>
         Edit <code>apps/web/src/main.tsx</code> and save to test HMR
       </p>
     </div>
