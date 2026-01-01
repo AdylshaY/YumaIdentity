@@ -10,13 +10,13 @@ export interface AuthorizeRequest {
 }
 
 export interface AuthorizeApiRequest {
-  ClientId: string;
-  RedirectUri: string;
-  CodeChallenge: string;
-  CodeChallengeMethod: string;
-  State?: string;
-  Scope?: string;
-  SessionId?: string;
+  client_id: string;
+  redirect_uri: string;
+  code_challenge: string;
+  code_challenge_method: string;
+  state?: string;
+  scope?: string;
+  session_id?: string;
 }
 
 export interface AuthorizeResponse {
@@ -28,17 +28,18 @@ export interface AuthorizeResponse {
 }
 
 export interface LoginRequest {
-  Email: string;
-  Password: string;
-  ClientId: string;
+  email: string;
+  password: string;
+  clientId: string;
 }
 
 export interface LoginResponse {
   sessionId: string;
+  email: string;
 }
 
 export interface RegisterRequest {
-  Email: string;
-  Password: string;
-  ClientId?: string;
+  email: string;
+  password: string;
+  clientId?: string;
 }

@@ -10,15 +10,15 @@ import {
 
 export const AuthService = {
   authorize: async (params: AuthorizeRequest): Promise<AuthorizeResponse> => {
-    // Map snake_case URL params to PascalCase API params
+    // Map snake_case URL params to snake_case API params
     const apiParams: AuthorizeApiRequest = {
-      ClientId: params.client_id,
-      RedirectUri: params.redirect_uri,
-      CodeChallenge: params.code_challenge || '',
-      CodeChallengeMethod: params.code_challenge_method || 'S256',
-      State: params.state,
-      Scope: params.scope,
-      SessionId: params.session_id,
+      client_id: params.client_id,
+      redirect_uri: params.redirect_uri,
+      code_challenge: params.code_challenge || '',
+      code_challenge_method: params.code_challenge_method || 'S256',
+      state: params.state,
+      scope: params.scope,
+      session_id: params.session_id,
     };
 
     const { data } = await api.get<AuthorizeResponse>('/OAuth/authorize', {

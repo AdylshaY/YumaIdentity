@@ -14,6 +14,7 @@ namespace YumaIdentity.API.Controllers
     using YumaIdentity.Application.Features.OAuth.Queries.Authorize;
     using YumaIdentity.Application.Features.OAuth.Queries.UserInfo;
     using YumaIdentity.Application.Features.OAuth.Shared;
+    using YumaIdentity.API.Models.Requests;
 
     /// <summary>
     /// OAuth2 endpoints for authentication and authorization.
@@ -49,8 +50,19 @@ namespace YumaIdentity.API.Controllers
         [HttpGet("authorize")]
         [ProducesResponseType(typeof(AuthorizeQueryResponse), 200)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> Authorize([FromQuery] AuthorizeQuery query)
+        public async Task<IActionResult> Authorize([FromQuery] AuthorizeRequestDto request)
         {
+            var query = new AuthorizeQuery
+            {
+                ClientId = request.ClientId,
+                RedirectUri = request.RedirectUri,
+                CodeChallenge = request.CodeChallenge,
+                CodeChallengeMethod = request.CodeChallengeMethod,
+                State = request.State,
+                Scope = request.Scope,
+                SessionId = request.SessionId
+            };
+
             var response = await _mediator.Send(query);
             return Ok(response);
         }
